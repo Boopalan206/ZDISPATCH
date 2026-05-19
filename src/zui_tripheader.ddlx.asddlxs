@@ -1,0 +1,252 @@
+@Metadata.layer: #CORE
+@Search.searchable: true
+@UI: {
+    headerInfo : {
+        typeName: 'Dispatch Management',
+        typeNamePlural: 'Dispatch Management App',
+        title : { type: #STANDARD, value: 'VehicleNumber' },
+        description : { value: 'TripID' }
+    },
+    presentationVariant: [{
+        sortOrder: [{ by: 'TripID', direction: #ASC }]
+    }]
+}
+
+annotate entity ZC_TripHeader with
+{
+
+  @UI: {
+      facet: [{
+          id : 'AdminHeader',
+          purpose: #HEADER,
+          type : #FIELDGROUP_REFERENCE,
+          targetQualifier: 'AdminFields',
+          label: 'Administrative info',
+          position : 10
+      },{
+          id : 'ExpenseHeader',
+          purpose: #HEADER,
+          type : #DATAPOINT_REFERENCE,
+          targetQualifier: 'TotalExpense',
+          position : 20
+      },{
+          id : 'StatusHeader',
+          purpose: #HEADER,
+          type : #DATAPOINT_REFERENCE,
+          targetQualifier: 'Statusinfo',
+          position : 30
+      },{
+          id: 'TripDetail',
+          label: 'Trip',
+          type: #COLLECTION,
+          position: 10
+      },{
+          id : 'Details',
+          label : 'General Info',
+          type : #IDENTIFICATION_REFERENCE,
+          position: 10,
+          parentId: 'TripDetail',
+          purpose: #STANDARD,
+          targetQualifier: 'General'
+      },{
+          id : 'Contact',
+          label : 'Assigned Driver',
+          type : #IDENTIFICATION_REFERENCE,
+          position: 20,
+          parentId: 'TripDetail',
+          purpose: #STANDARD,
+          targetQualifier: 'Contact'
+      },{
+          id : 'Load',
+          label : 'Load Detail',
+          type : #IDENTIFICATION_REFERENCE,
+          position: 30,
+          parentId: 'TripDetail',
+          purpose: #STANDARD,
+          targetQualifier: 'Load'
+      },{
+          id: 'Incidents',
+          purpose: #STANDARD,
+          type :#LINEITEM_REFERENCE,
+          label: 'Trip Incidents',
+          targetElement: '_Incident',
+          position : 20
+      }]
+  }
+
+
+  @EndUserText.label: 'Trip ID'
+  @UI : {
+      selectionField: [{ position: 10 }],
+      lineItem: [{ position: 10, importance: #HIGH }],
+      identification: [
+                { position: 10, qualifier: 'General' }, 
+                { type: #FOR_ACTION_GROUP,
+                  label: 'Change to',
+                  actionGroupId: 'idObjectPageGroup' 
+                },
+                { type: #FOR_ACTION,
+                  dataAction: 'StartTrip',
+                  label: 'In-Transit',
+                  actionGroupId: 'idObjectPageGroup',
+                  iconUrl: 'sap-icon://begin',
+                  position : 15
+                },
+                { type: #FOR_ACTION,
+                  dataAction: 'MarkReturned',
+                  label: 'Returned',
+                  actionGroupId: 'idObjectPageGroup',
+                  position : 20
+                },
+                { type: #FOR_ACTION,
+                  dataAction: 'Settle',
+                  label: 'Settled',
+                  iconUrl: 'sap-icon://status-positive',
+                  actionGroupId: 'idObjectPageGroup',
+                  position : 25
+                },
+                { type: #FOR_ACTION,
+                  dataAction: 'CancelTrip',
+                  label: 'Cancelled',
+                  iconUrl: 'sap-icon://cancel',
+                  actionGroupId: 'idObjectPageGroup',
+                  position : 30
+                },
+                { 
+                  type : #FOR_ACTION,
+                  dataAction : 'AddNewLocation',
+                  label : 'Add New Location',
+                  position : 20
+                }
+      ]
+  }
+  TripID;
+
+  @EndUserText.label: 'Trip Created Date'
+  @UI : {
+      selectionField: [{ position: 20 }],
+      lineItem: [{ position: 20 }],
+      fieldGroup: [{ qualifier: 'AdminFields', position: 20 }]
+  }
+  CreateAt;
+
+  @UI.hidden: true
+  TripDate;
+
+  @EndUserText.label: 'Vehicle Number'
+  @UI : {
+      selectionField: [{ position: 30 }],
+      lineItem: [{ position: 30, importance: #HIGH }],
+      identification: [{ position: 30, qualifier: 'General' }]
+  }
+  @Consumption : {
+      valueHelpDefinition: [{
+          entity : {
+              name: 'ZI_Vehicle', element: 'VehicleRegNumber'
+          },
+          useForValidation: true
+      }]
+    }
+  @Search.defaultSearchElement: true
+  VehicleNumber;
+
+  @EndUserText.label: 'Driver ID'
+  @UI : {
+      hidden : true,
+      identification: [{ position : 35, qualifier: 'Contact' }]
+  }
+  DriverID;
+
+  @EndUserText.label: 'Full Name'
+  @UI : {
+      selectionField: [{ position: 40 }],
+      lineItem: [{ position: 40, importance: #MEDIUM }],
+      identification: [{ position : 40, qualifier: 'Contact' }]
+  }
+  DriverName;
+
+  @EndUserText.label: 'Contact Number'
+  @UI : {
+      lineItem: [{ position: 60 }],
+      identification: [{ position: 60, qualifier: 'Contact' }]
+  }
+  DriverMobile;
+
+  @EndUserText.label: 'Trip Start Location'
+  @UI : {
+      lineItem: [{ position: 70, importance: #HIGH }],
+      identification: [{ position: 70, qualifier: 'Load' }],
+      textArrangement: #TEXT_ONLY
+  }
+  @Consumption : { 
+    valueHelpDefinition: [{  
+        entity : { name: 'ZI_Location', element : 'LocationID' },
+        useForValidation: true
+    }]
+  }
+  SourceID;
+
+  @EndUserText.label: 'Trip End Location'
+  @UI : {
+      lineItem: [{ position: 80, importance: #HIGH }],
+      identification: [{ position: 80, qualifier: 'Load' }],
+      textArrangement: #TEXT_ONLY
+  }
+  @Consumption : { 
+    valueHelpDefinition: [{  
+        entity : { name: 'ZI_Location', element : 'LocationID' },
+        useForValidation: true
+    }]
+  }
+  DestinationID;
+
+  @EndUserText.label: 'Load Type'
+  @UI : {
+      lineItem: [{ position: 85 }],
+      identification: [{ position: 85, qualifier: 'Load' }],
+      textArrangement: #TEXT_LAST
+  }
+  @Consumption : { 
+    valueHelpDefinition: [{  
+        entity : { name: 'ZI_LoadTypeVH', element : 'LoadType' },
+        useForValidation: true
+    }]
+  }
+  LoadType;
+
+  @EndUserText.label: 'Trip Status'
+  @UI : {
+      selectionField: [{ position: 90 }],
+      lineItem: [{ position: 90, importance: #HIGH }],
+      dataPoint : { qualifier: 'Statusinfo', title : 'Trip Status' }
+  }
+  TripStatus;
+  
+  @EndUserText.label: 'Review Reason'
+  ReviewReason;
+
+  @EndUserText.label: 'Incident Expenses'
+  @UI : {
+      lineItem: [{ position: 95 }],
+      dataPoint : { qualifier: 'TotalExpense', title: 'Total Expense' }
+  }
+  TripTotalExpense;
+
+  @EndUserText.label: 'Created By'
+  @UI: {
+      fieldGroup: [{ qualifier: 'AdminFields', position: 100 }]
+  }
+  CreatedBy;
+
+  @EndUserText.label: 'Modified By'
+  @UI: {
+      fieldGroup: [{ qualifier: 'AdminFields', position: 110 }]
+  }
+  LastChangedBy;
+
+  @EndUserText.label: 'Modified At'
+  @UI: {
+      fieldGroup: [{ qualifier: 'AdminFields', position: 120 }]
+  }
+  LastChangedAt;
+}

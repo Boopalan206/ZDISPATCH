@@ -1,0 +1,27 @@
+managed implementation in class zbp_i_driver unique;
+strict ( 2 );
+
+define behavior for zi_driver //alias <alias_name>
+persistent table ztab_driver
+lock master
+authorization master ( instance )
+//etag master <field_name>
+{
+  create ( authorization : global );
+  update;
+  delete;
+  field ( readonly ) DriverId;
+
+  mapping for ztab_driver {
+    DriverId = d_id;
+    FullName = d_full_name;
+    Mobile = d_mobile;
+    EmergencyMobile = d_emobile;
+    DrivingLicense = d_license;
+    LicenseExpiry = d_lexpiry;
+    GovernmentID = d_govid;
+    AadharCard = d_aadhar;
+    PanCard = d_pan;
+    DriverStatus = d_status;
+  }
+}

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZDISPATCH_MSGS</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Messages for Dispatch Applications</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Vehicle Number is mandatory for saving the Trip Details</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Start Place is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>End Place is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Load Type is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Amount cannot be negatvie</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

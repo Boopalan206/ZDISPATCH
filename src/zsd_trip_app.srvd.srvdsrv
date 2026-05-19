@@ -1,0 +1,8 @@
+@EndUserText.label: 'Trip Application Service'
+define service ZSD_TRIP_APP {
+  expose ZC_TripHeader   as TripHeader;
+  expose ZC_TripIncident as TripIncidents;
+  expose zi_driver       as Driver;
+  expose ZI_Vehicle      as Vehicle;
+  expose ZI_Location     as Location;
+}

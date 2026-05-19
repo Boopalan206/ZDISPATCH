@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DOMA" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD01V>
+    <DOMNAME>ZD_INC_CATG</DOMNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000015</LENG>
+    <OUTPUTLEN>000015</OUTPUTLEN>
+    <VALEXI>X</VALEXI>
+    <DDTEXT>Incident Category domain</DDTEXT>
+    <DOMMASTER>E</DOMMASTER>
+   </DD01V>
+   <DD07V_TAB>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0001</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>FUEL</DOMVALUE_L>
+     <DDTEXT>Fuel &amp; Refill</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0002</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>TOLL</DOMVALUE_L>
+     <DDTEXT>Toll &amp; Parking</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0003</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>BRKD</DOMVALUE_L>
+     <DDTEXT>Vehicle Breakdown</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0004</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>ACDT</DOMVALUE_L>
+     <DDTEXT>Traffic Accident</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0005</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>MAIN</DOMVALUE_L>
+     <DDTEXT>Minor Maintenance</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0006</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>FINE</DOMVALUE_L>
+     <DDTEXT>Traffic Fine / Penalty</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0007</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>HLTH</DOMVALUE_L>
+     <DDTEXT>Driver Health/Medical</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0008</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>LOAD</DOMVALUE_L>
+     <DDTEXT>Loading/Unloading</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0009</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>STAY</DOMVALUE_L>
+     <DDTEXT>Lodging &amp; Boarding</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0010</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>WTHR</DOMVALUE_L>
+     <DDTEXT>Weather Delay</DDTEXT>
+    </DD07V>
+   </DD07V_TAB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

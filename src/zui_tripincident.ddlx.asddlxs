@@ -1,0 +1,138 @@
+@Metadata.layer: #CUSTOMER
+@Search.searchable: true
+@UI: { 
+    headerInfo : {
+        typeName: 'Dispatch Management',
+        typeNamePlural: 'Dispatch Management App',
+        title : { type: #STANDARD, value: 'IncidentCategory' },
+        description : { value: 'IncidentDescription' }
+    }
+}
+annotate entity ZC_TripIncident
+    with 
+{
+    @UI : { 
+        facet: [{ 
+            id : 'AdminIncident',
+            purpose: #HEADER,
+            type : #FIELDGROUP_REFERENCE,
+            targetQualifier: 'AdminFields1',
+            label: 'Administrative info',
+            position : 10
+        },{
+            id : 'StatusInfo',
+            purpose: #HEADER,
+            type : #DATAPOINT_REFERENCE,
+            targetQualifier: 'Status_Info',
+            position : 20
+        },{ 
+            id: 'IncidentDetail',
+            label: 'Incident',
+            type: #COLLECTION,
+            position: 10        
+        },{
+            id : 'IncidentInfo',
+            label : 'Info',
+            type : #IDENTIFICATION_REFERENCE,
+            position: 10,
+            parentId: 'IncidentDetail',
+            purpose: #STANDARD,
+            targetQualifier: 'Info'
+        }]
+    }
+
+    @EndUserText.label: 'Incident'
+    @UI : { 
+        hidden : true
+    }
+    IncidentID;
+    
+    @EndUserText.label: 'Trip ID'
+    @UI.hidden: true
+    TripID;
+    
+    @EndUserText.label: 'Incident Date'
+    @UI.hidden: true
+    IncidentDate;
+    
+    @EndUserText.label: 'Incident Category'
+    @UI : { 
+        lineItem: [{ position: 20 }],
+        identification: [{ position: 20, qualifier: 'Info' }]
+    }
+    @Consumption : { 
+        valueHelpDefinition: [{  
+            entity : { name: 'ZI_IncCategVH', element: 'Category' }
+        }]
+    }
+    IncidentCategory;
+    
+    @EndUserText.label: 'Incident Description'
+    @UI : { 
+        lineItem: [{ position: 30 }],
+        identification: [{ position: 30, qualifier: 'Info' }]
+    }
+    @Search.defaultSearchElement: true
+    IncidentDescription;
+    
+    @EndUserText.label: 'Incident Location'
+    @UI : { 
+        selectionField: [{ position: 40 }],
+        lineItem: [{ position: 40 }],
+        identification: [{ position: 40, qualifier: 'Info' }]
+    }
+    IncidentLocation;
+    
+    @EndUserText.label: 'Amount'
+    @UI : { 
+        lineItem: [{ position: 50 }],
+        identification: [{ position: 50, qualifier: 'Info' }]
+    }
+    IncidentAmount;
+    
+    @EndUserText.label: 'Currency'
+    @Consumption : { 
+        valueHelpDefinition: [{ 
+            entity : { name: 'I_CurrencyStdVH', element: 'Currency' }
+        }]
+    }
+    Currency;
+    
+    @EndUserText.label: 'Receipt Status'
+    @UI : { 
+        selectionField: [{ position: 40 }],
+        lineItem: [{ position: 60 }],
+        identification: [{ position : 60 }],
+        dataPoint : { qualifier: 'Status_Info', title : 'Receipt Status' }
+    }
+    ReceiptStatus;
+    
+    @EndUserText.label: 'Incident Owner'
+    @UI : { 
+        lineItem: [{ position: 70 }],
+        identification: [{ position : 70 }],
+        fieldGroup: [{ qualifier: 'AdminFields1' }]
+    }
+    IncidentCreatedBy;
+    
+    @EndUserText.label: 'Incident At'
+    @UI : { 
+        identification: [{ position : 80 }],
+        fieldGroup: [{ qualifier: 'AdminFields1' }]
+    }
+    CreateAt;
+    
+    @EndUserText.label: 'Modified By'
+    @UI : { 
+        identification: [{ position : 90 }],
+        fieldGroup: [{ qualifier: 'AdminFields1' }]
+    }
+    LastChangedBy;
+    
+    @EndUserText.label: 'Modified At'
+    @UI : { 
+        identification: [{ position : 100 }],
+        fieldGroup: [{ qualifier: 'AdminFields1' }]
+    }
+    LastChangedAt;
+}

@@ -1,0 +1,23 @@
+managed implementation in class zbp_i_location unique;
+strict ( 2 );
+
+define behavior for ZI_Location alias LocationBO
+persistent table ztab_location
+lock master
+authorization master ( instance )
+//etag master <field_name>
+early numbering
+{
+  create ( authorization : global );
+  update;
+  delete;
+  field ( readonly ) LocationID;
+
+  mapping for ztab_location {
+    LocationID = l_id;
+    LocationName = l_location;
+    CompanyName = l_company;
+
+  }
+
+}

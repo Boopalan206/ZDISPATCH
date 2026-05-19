@@ -1,0 +1,163 @@
+managed implementation in class zbp_i_tripheader unique;
+strict ( 2 );
+with draft;
+define behavior for ZI_TripHeader alias TripHeader
+persistent table ztab_tripheader
+draft table zdtab_tripheader
+lock master total etag LastChangedAt
+authorization master ( instance, global )
+etag master LocalLastChangedAt
+late numbering
+{
+
+  // CRUD Details
+  create ( authorization : global );
+  update ( features : instance );
+  delete ( features : instance );
+
+  // Field details
+  field ( readonly ) TripID, DriverName, DriverMobile;
+  field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace;
+  //  Dynamic feature control
+  field ( features : instance ) TripStatus;
+
+  association _Incident { create; with draft; }
+
+
+  // Draft area
+  draft action Activate optimized;
+  draft action Resume;
+  draft action ( features : instance ) Edit;
+  draft action Discard;
+  draft determine action Prepare
+  {
+    validation ValidateMandatoryFields;
+    validation TripIncident~ValidateAmountField;
+  }
+
+  // Action details
+  action ( features : instance ) StartTrip result [1] $self;
+  action ( features : instance ) MarkReturned result [1] $self;
+  action ( features : instance ) Settle result [1] $self;
+  action ( features : instance ) CancelTrip result [1] $self;
+  action AddNewLocation parameter za_location result [1] $self;
+
+  // Determination Details
+  determination FillDriverDetails on modify { field VehicleNumber; }
+  determination SetDefaultStatus on modify { create; }
+  determination fillPlaceDescriptions
+    on modify {
+        field SourceID, DestinationID;
+    }
+
+  // Validation details
+  validation ValidateMandatoryFields
+  on save
+  {
+    create; update;
+    field VehicleNumber, StartPlace, EndPlace, LoadType;
+  }
+
+
+  // Side effects
+  side effects
+  {
+    field VehicleNumber
+        affects field DriverID,
+            field DriverName,
+            field DriverMobile;
+
+    entity _Incident affects field TripTotalExpense;
+
+    action AddNewLocation
+        affects entity _Source,
+                entity _Destination,
+                field SourceID,
+                field DestinationID;
+
+    field SourceID affects field StartPlace;
+    field DestinationID affects field EndPlace;
+
+  }
+
+
+  mapping for ztab_tripheader
+    {
+      TripID             = t_tripid;
+      TripDate           = t_cdate;
+      VehicleNumber      = t_vno;
+      DriverID           = t_driverid;
+      SourceID           = t_sourceid;
+      StartPlace         = t_source;
+      DestinationID      = t_destid;
+      EndPlace           = t_destination;
+      LoadType           = t_loadtype;
+      TripStatus         = t_status;
+      TripTotalExpense   = t_tot_exp;
+      ReviewReason       = t_review_reason;
+      PreviousStatus     = t_prev_status;
+      CreatedBy          = created_by;
+      CreateAt           = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}
+
+define behavior for ZI_TripIncident alias TripIncident
+persistent table ztab_tripitem
+draft table zdtab_tripitem
+lock dependent by _TripHeader
+authorization dependent by _TripHeader
+late numbering
+//etag master <field_name>
+{
+  update;
+  delete;
+
+  // Field details
+  field ( readonly ) IncidentID, TripID;
+  field ( readonly ) IncidentDate, ReceiptStatus;
+  field ( mandatory ) IncidentCategory, IncidentAmount, Currency, IncidentLocation;
+
+  association _TripHeader { with draft; }
+
+  // Validation section
+  validation ValidateAmountField
+  on save
+  {
+    create; update;
+    field IncidentAmount;
+  }
+
+  // Determination section
+  determination DetermineTotalExpense
+  on modify
+  {
+    create; update; delete;
+    field IncidentAmount;
+  }
+
+  side effects
+  {
+    field IncidentAmount affects entity _TripHeader;
+  }
+
+  mapping for ztab_tripitem
+    {
+      IncidentID          = i_id;
+      TripID              = i_tripid;
+      IncidentDate        = i_cdate;
+      IncidentCategory    = i_categ;
+      IncidentDescription = i_descr;
+      IncidentLocation    = i_locn;
+      IncidentAmount      = i_amount;
+      Currency            = i_curr;
+      ReceiptStatus       = i_rec_status;
+      IncidentCreatedBy   = created_by;
+      CreateAt            = created_at;
+      LastChangedBy       = last_changed_by;
+      LastChangedAt       = last_changed_at;
+      LocalLastChangedAt  = local_last_changed_at;
+    }
+}
