@@ -83,7 +83,7 @@ annotate entity ZC_TripHeader with
                 { position: 10, qualifier: 'General' }, 
                 { type: #FOR_ACTION_GROUP,
                   label: 'Change to',
-                  actionGroupId: 'idObjectPageGroup' 
+                  actionGroupId: 'idObjectPageGroup'
                 },
                 { type: #FOR_ACTION,
                   dataAction: 'StartTrip',
@@ -91,12 +91,6 @@ annotate entity ZC_TripHeader with
                   actionGroupId: 'idObjectPageGroup',
                   iconUrl: 'sap-icon://begin',
                   position : 15
-                },
-                { type: #FOR_ACTION,
-                  dataAction: 'MarkReturned',
-                  label: 'Returned',
-                  actionGroupId: 'idObjectPageGroup',
-                  position : 20
                 },
                 { type: #FOR_ACTION,
                   dataAction: 'Settle',
@@ -111,6 +105,19 @@ annotate entity ZC_TripHeader with
                   iconUrl: 'sap-icon://cancel',
                   actionGroupId: 'idObjectPageGroup',
                   position : 30
+                },
+                { 
+                  type : #FOR_ACTION,
+                  dataAction : 'EmergencyLockdown',
+                  label : 'Emergency Lock-down',
+                  actionGroupId: 'idObjectPageGroup',
+                  position : 35
+                },
+                { type: #FOR_ACTION,
+                  dataAction: 'Unlock',
+                  label: 'Unlock',
+                  actionGroupId: 'idObjectPageGroup',
+                  position : 20
                 },
                 { 
                   type : #FOR_ACTION,

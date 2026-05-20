@@ -17,10 +17,11 @@ use etag
   use action Prepare;
 
   use action StartTrip;
-  use action MarkReturned;
+  use action Unlock;
   use action Settle;
   use action CancelTrip;
   use action AddNewLocation;
+  use action EmergencyLockdown;
 
   use association _Incident { create; with draft; }
 
@@ -32,4 +33,5 @@ define behavior for ZC_TripIncident alias TripIncident
   use delete;
 
   use association _TripHeader { with draft; }
+  use action IncidentVerified;
 }

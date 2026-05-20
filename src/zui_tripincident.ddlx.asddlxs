@@ -57,7 +57,14 @@ annotate entity ZC_TripIncident
     
     @EndUserText.label: 'Incident Category'
     @UI : { 
-        lineItem: [{ position: 20 }],
+        lineItem: [
+            { position: 20 },
+            { type: #FOR_ACTION,
+              dataAction: 'IncidentVerified',
+              label: 'Complete',
+              position: 10
+            }            
+        ],
         identification: [{ position: 20, qualifier: 'Info' }]
     }
     @Consumption : { 

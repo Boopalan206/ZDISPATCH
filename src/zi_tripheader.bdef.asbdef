@@ -37,9 +37,10 @@ late numbering
 
   // Action details
   action ( features : instance ) StartTrip result [1] $self;
-  action ( features : instance ) MarkReturned result [1] $self;
   action ( features : instance ) Settle result [1] $self;
   action ( features : instance ) CancelTrip result [1] $self;
+  action ( features : instance ) EmergencyLockdown result [1] $self;
+  action ( features : instance ) Unlock result [1] $self;
   action AddNewLocation parameter za_location result [1] $self;
 
   // Determination Details
@@ -122,6 +123,8 @@ late numbering
 
   association _TripHeader { with draft; }
 
+  action ( features : instance ) IncidentVerified result [1] $self;
+
   // Validation section
   validation ValidateAmountField
   on save
@@ -137,10 +140,19 @@ late numbering
     create; update; delete;
     field IncidentAmount;
   }
+  determination DetermineIncidentStatus
+    on modify {
+        create;
+        field IncidentCategory;
+    }
 
   side effects
   {
-    field IncidentAmount affects entity _TripHeader;
+    field IncidentAmount
+        affects entity _TripHeader;
+    field IncidentCategory
+        affects entity _TripHeader,
+                field ReceiptStatus;
   }
 
   mapping for ztab_tripitem

@@ -65,6 +65,20 @@ CLASS lhc_tripincident DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS DetermineTotalExpense FOR DETERMINE ON MODIFY
       IMPORTING keys FOR TripIncident~DetermineTotalExpense.
 
+    METHODS DetermineIncidentStatus FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR TripIncident~DetermineIncidentStatus.
+
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR TripIncident RESULT result.
+
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR TripIncident RESULT result.
+
+    METHODS IncidentVerified FOR MODIFY
+      IMPORTING keys FOR ACTION TripIncident~IncidentVerified RESULT result.
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR TripIncident RESULT result.
+
 ENDCLASS.
 
 CLASS lhc_tripincident IMPLEMENTATION.
@@ -171,6 +185,103 @@ CLASS lhc_tripincident IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD DetermineIncidentStatus.
+
+    " Read incidents records
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripIncident
+        ALL FIELDS
+        WITH CORRESPONDING #( keys )
+       RESULT DATA(lt_incidents).
+
+    DATA :lt_update TYPE TABLE FOR UPDATE ZI_TripHeader\\TripIncident.
+
+    LOOP AT lt_incidents INTO DATA(ls_incident).
+
+      APPEND VALUE #(
+          %tky = ls_incident-%tky
+          ReceiptStatus = COND #( WHEN ls_incident-IncidentCategory = 'BRKD'
+                                      THEN 'In-Progress'
+                                  ELSE 'Not-Verified'
+                                )
+       ) TO lt_update.
+
+    ENDLOOP.
+
+    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripIncident
+        UPDATE
+        FIELDS ( ReceiptStatus )
+        WITH lt_update
+      REPORTED DATA(lt_reported).
+
+  ENDMETHOD.
+
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD get_global_authorizations.
+  ENDMETHOD.
+
+  METHOD IncidentVerified.
+
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripIncident
+        ALL FIELDS
+        WITH CORRESPONDING #( keys )
+     RESULT DATA(lt_incident).
+
+    DATA : lt_update  TYPE TABLE FOR UPDATE ZI_TripHeader\\TripIncident.
+
+    LOOP AT lt_incident ASSIGNING FIELD-SYMBOL(<ls_incident>).
+      APPEND VALUE #( %tky = <ls_incident>-%tky
+                      ReceiptStatus = COND #( WHEN <ls_incident>-IncidentCategory = 'BRKD'
+                                                OR <ls_incident>-IncidentCategory = 'ACDT'
+                                                  THEN 'Completed'
+                                              ELSE 'Verified'
+                                            )
+                    ) TO lt_update.
+    ENDLOOP.
+
+    " Change the status in the transaction buffer
+    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripIncident
+        UPDATE FIELDS ( ReceiptStatus )
+        WITH lt_update
+      FAILED failed
+      REPORTED reported.
+
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripIncident
+        ALL FIELDS
+        WITH CORRESPONDING #( keys )
+    RESULT lt_incident.
+
+    result = VALUE #( FOR ls_incident IN lt_incident
+                        ( %tky = ls_incident-%tky
+                          %param = ls_incident )
+                    ).
+
+  ENDMETHOD.
+
+  METHOD get_instance_features.
+
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripIncident
+        ALL FIELDS
+        WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_result).
+
+    result = VALUE #( FOR ls_result IN lt_result
+                        ( %tky = ls_result-%tky
+                          %action-IncidentVerified = COND #( WHEN ls_result-ReceiptStatus = 'Completed'
+                                                               OR ls_result-ReceiptStatus = 'Verified'
+                                                                THEN if_abap_behv=>fc-o-disabled
+                                                             ELSE if_abap_behv=>fc-o-enabled ) )
+                    ).
+
+  ENDMETHOD.
+
 ENDCLASS.
 
 ******************* TriHeader - handler Class **************************
@@ -201,8 +312,8 @@ CLASS lhc_TripHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS CancelTrip FOR MODIFY
       IMPORTING keys FOR ACTION TripHeader~CancelTrip RESULT result.
 
-    METHODS MarkReturned FOR MODIFY
-      IMPORTING keys FOR ACTION TripHeader~MarkReturned RESULT result.
+    METHODS Unlock FOR MODIFY
+      IMPORTING keys FOR ACTION TripHeader~Unlock RESULT result.
 
     METHODS Settle FOR MODIFY
       IMPORTING keys FOR ACTION TripHeader~Settle RESULT result.
@@ -212,6 +323,9 @@ CLASS lhc_TripHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS fillPlaceDescriptions FOR DETERMINE ON MODIFY
       IMPORTING keys FOR TripHeader~fillPlaceDescriptions.
+
+    METHODS EmergencyLockdown FOR MODIFY
+      IMPORTING keys FOR ACTION TripHeader~EmergencyLockdown RESULT result.
 
 ENDCLASS.
 
@@ -357,34 +471,62 @@ CLASS lhc_TripHeader IMPLEMENTATION.
       WITH CORRESPONDING #( keys )
     RESULT DATA(lt_trips).
 
+    " 2. Read Child Incidents to check for Categories
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+    ENTITY TripHeader BY \_Incident
+        FIELDS ( IncidentCategory ReceiptStatus ) WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_incidents)
+        LINK DATA(lt_links).
+
     result = VALUE #(
                         FOR ls_trip IN lt_trips
+                        " --- Evaluate Child Condition Inline ---
+                        LET lv_can_lockdown = REDUCE abap_boolean(
+                                                INIT flag = abap_false
+                                                FOR ls_link IN lt_links WHERE ( source-%tky = ls_trip-%tky )
+                                                NEXT flag = COND #( WHEN flag = abap_true
+                                                                      THEN abap_true
+                                                                    WHEN lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory IS NOT INITIAL
+                                                                     AND ( lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'ACDT'
+                                                                           OR lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'BRKD' )
+                                                                     AND lt_incidents[ KEY id %tky = ls_link-target-%tky ]-ReceiptStatus = 'In-Progress'
+                                                                      THEN abap_true
+                                                                    ELSE abap_false
+                                                                  )
+                                              )
+                        IN
                         (
                             %tky = ls_trip-%tky
                             %action-StartTrip = COND #( WHEN ls_trip-TripStatus = 'Planned'
+                                                          OR ls_trip-TripStatus = 'Un-Locked'
                                                             THEN if_abap_behv=>fc-o-enabled
                                                         ELSE if_abap_behv=>fc-o-disabled
                                                       )
-                            %action-MarkReturned = COND #( WHEN ls_trip-TripStatus = 'In-Transit'
+                            %action-Unlock = COND #( WHEN ls_trip-TripStatus = 'Locked'
                                                             THEN if_abap_behv=>fc-o-enabled
                                                            ELSE  if_abap_behv=>fc-o-disabled
                                                       )
                             %action-Settle = COND #( WHEN ls_trip-TripStatus = 'In-Transit'
                                                             THEN if_abap_behv=>fc-o-disabled
-                                                        ELSE  if_abap_behv=>fc-o-enabled
-                                                      )
+                                                     ELSE  if_abap_behv=>fc-o-enabled
+                                                   )
                             %action-CancelTrip = COND #( WHEN ls_trip-TripStatus = 'Cancelled'
                                                            OR ls_trip-TripStatus = 'Settled'
+                                                           OR ls_trip-TripStatus = 'Locked'
                                                             THEN if_abap_behv=>fc-o-disabled
-                                                        ELSE  if_abap_behv=>fc-o-enabled
+                                                         ELSE  if_abap_behv=>fc-o-enabled
                                                       )
-                            %action-Edit = COND #( WHEN ls_trip-TripStatus = 'In-Review'
-                                                THEN if_abap_behv=>fc-o-disabled
-                                              ELSE if_abap_behv=>fc-o-enabled
-                                            ) " <---- This disables the edit button in the draft mode
+                            %action-EmergencyLockdown = COND #( WHEN lv_can_lockdown AND ls_trip-TripStatus NE 'Locked'
+                                                                    THEN if_abap_behv=>fc-o-enabled
+                                                                ELSE if_abap_behv=>fc-o-disabled
+                                                              )
+                            %action-Edit = COND #( WHEN ls_trip-TripStatus = 'Locked'
+                                                    THEN if_abap_behv=>fc-o-disabled
+                                                   ELSE if_abap_behv=>fc-o-enabled
+                                                 ) " <---- This disables the edit button in the draft mode
                             %delete = COND #( WHEN ls_trip-TripStatus = 'In-Transit'
                                                 OR ls_trip-TripStatus = 'Settled'
-                                                OR ls_trip-TripStatus = 'In-Review'
+                                                OR ls_trip-TripStatus = 'Locked'
                                                 THEN if_abap_behv=>fc-o-disabled
                                               ELSE  if_abap_behv=>fc-o-enabled
                                           )
@@ -453,7 +595,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                         %param = ls_result ) ).
   ENDMETHOD.
 
-  METHOD MarkReturned.
+  METHOD Unlock.
 
     " Change the status in the transaction buffer
     MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
@@ -461,7 +603,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
         UPDATE FIELDS ( TripStatus )
         WITH VALUE #( FOR ls_key IN keys
                       ( %tky = ls_key-%tky
-                        TripStatus = 'Returned' ) )
+                        TripStatus = 'Un-Locked' ) )
         FAILED failed
         REPORTED reported.
 
@@ -593,6 +735,31 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                         ).
 
     ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD EmergencyLockdown.
+
+    " Change the status in the transaction buffer
+    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripHeader
+        UPDATE FIELDS ( TripStatus )
+        WITH VALUE #( FOR ls_key IN keys
+                      ( %tky = ls_key-%tky
+                        TripStatus = 'Locked' ) )
+        FAILED failed
+        REPORTED reported.
+
+    " read the records that are modified
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripHeader
+        ALL FIELDS WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_result).
+
+    " Send as result to update the UI
+    result = VALUE #( FOR ls_result IN lt_result
+                      ( %tky = ls_result-%tky
+                        %param = ls_result ) ).
 
   ENDMETHOD.
 

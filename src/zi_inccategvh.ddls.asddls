@@ -13,8 +13,8 @@ define view entity ZI_IncCategVH
       and Texts.language       = $session.system_language
 {
       @EndUserText.label: 'Category'
+      @Search.defaultSearchElement: true
   key Values.value_low as Category,
   
-      @Search.defaultSearchElement: true
       Texts.text       as Description
 }
