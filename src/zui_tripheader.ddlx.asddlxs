@@ -77,7 +77,7 @@ annotate entity ZC_TripHeader with
 
   @EndUserText.label: 'Trip ID'
   @UI : {
-      selectionField: [{ position: 10 }],
+//      selectionField: [{ position: 10 }],
       lineItem: [{ position: 10, importance: #HIGH }],
       identification: [
                 { position: 10, qualifier: 'General' }, 
@@ -99,13 +99,13 @@ annotate entity ZC_TripHeader with
                   actionGroupId: 'idObjectPageGroup',
                   position : 25
                 },
-                { type: #FOR_ACTION,
-                  dataAction: 'CancelTrip',
-                  label: 'Cancelled',
-                  iconUrl: 'sap-icon://cancel',
-                  actionGroupId: 'idObjectPageGroup',
-                  position : 30
-                },
+//                { type: #FOR_ACTION,
+//                  dataAction: 'CancelTrip',
+//                  label: 'Cancelled',
+//                  iconUrl: 'sap-icon://cancel',
+//                  actionGroupId: 'idObjectPageGroup',
+//                  position : 30
+//                },
                 { 
                   type : #FOR_ACTION,
                   dataAction : 'EmergencyLockdown',
@@ -127,11 +127,15 @@ annotate entity ZC_TripHeader with
                 }
       ]
   }
+  @Search : { 
+    defaultSearchElement: true,
+    fuzzinessThreshold: 0.9
+  }
   TripID;
 
   @EndUserText.label: 'Trip Created Date'
   @UI : {
-      selectionField: [{ position: 20 }],
+      selectionField: [{ position: 20, element: 'CreateAt' }],
       lineItem: [{ position: 20 }],
       fieldGroup: [{ qualifier: 'AdminFields', position: 20 }]
   }
@@ -154,7 +158,10 @@ annotate entity ZC_TripHeader with
           useForValidation: true
       }]
     }
-  @Search.defaultSearchElement: true
+  @Search : { 
+    defaultSearchElement: true,
+    fuzzinessThreshold: 0.9
+  }
   VehicleNumber;
 
   @EndUserText.label: 'Driver ID'

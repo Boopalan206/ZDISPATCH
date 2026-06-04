@@ -8,11 +8,9 @@ define root view entity ZI_Vehicle
 {
       @EndUserText.label: 'Vehicle Number'
       @Search.defaultSearchElement: true
-      @Search.fuzzinessThreshold: 0.7
   key v_reg_no   as VehicleRegNumber,
   
       @EndUserText.label: 'Model'
-      @Search.defaultSearchElement: true
       v_model    as VehicleModel,
       
       @EndUserText.label: 'Capacity'

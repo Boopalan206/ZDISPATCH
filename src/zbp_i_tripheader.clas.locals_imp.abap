@@ -309,8 +309,8 @@ CLASS lhc_TripHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS SetDefaultStatus FOR DETERMINE ON MODIFY
       IMPORTING keys FOR TripHeader~SetDefaultStatus.
 
-    METHODS CancelTrip FOR MODIFY
-      IMPORTING keys FOR ACTION TripHeader~CancelTrip RESULT result.
+*    METHODS CancelTrip FOR MODIFY
+*      IMPORTING keys FOR ACTION TripHeader~CancelTrip RESULT result.
 
     METHODS Unlock FOR MODIFY
       IMPORTING keys FOR ACTION TripHeader~Unlock RESULT result.
@@ -506,21 +506,24 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                                                             THEN if_abap_behv=>fc-o-enabled
                                                            ELSE  if_abap_behv=>fc-o-disabled
                                                       )
-                            %action-Settle = COND #( WHEN ls_trip-TripStatus = 'In-Transit'
+                            %action-Settle = COND #( WHEN ls_trip-TripStatus = 'Cancelled'
+                                                       OR ls_trip-TripStatus = 'Settled'
+                                                       OR ls_trip-TripStatus = 'Locked'
                                                             THEN if_abap_behv=>fc-o-disabled
                                                      ELSE  if_abap_behv=>fc-o-enabled
                                                    )
-                            %action-CancelTrip = COND #( WHEN ls_trip-TripStatus = 'Cancelled'
-                                                           OR ls_trip-TripStatus = 'Settled'
-                                                           OR ls_trip-TripStatus = 'Locked'
-                                                            THEN if_abap_behv=>fc-o-disabled
-                                                         ELSE  if_abap_behv=>fc-o-enabled
-                                                      )
+*                            %action-CancelTrip = COND #( WHEN ls_trip-TripStatus = 'Cancelled'
+*                                                           OR ls_trip-TripStatus = 'Settled'
+*                                                           OR ls_trip-TripStatus = 'Locked'
+*                                                            THEN if_abap_behv=>fc-o-disabled
+*                                                         ELSE  if_abap_behv=>fc-o-enabled
+*                                                      )
                             %action-EmergencyLockdown = COND #( WHEN lv_can_lockdown AND ls_trip-TripStatus NE 'Locked'
                                                                     THEN if_abap_behv=>fc-o-enabled
                                                                 ELSE if_abap_behv=>fc-o-disabled
                                                               )
                             %action-Edit = COND #( WHEN ls_trip-TripStatus = 'Locked'
+                                                    OR ls_trip-TripStatus = 'Settled'
                                                     THEN if_abap_behv=>fc-o-disabled
                                                    ELSE if_abap_behv=>fc-o-enabled
                                                  ) " <---- This disables the edit button in the draft mode
@@ -530,6 +533,10 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                                                 THEN if_abap_behv=>fc-o-disabled
                                               ELSE  if_abap_behv=>fc-o-enabled
                                           )
+                           %action-AddNewLocation = COND #( WHEN ls_trip-TripStatus = 'Settled'
+                                                                then if_abap_behv=>fc-o-disabled
+                                                            else if_abap_behv=>fc-o-enabled
+                                                          )
                         )
                     ).
 
@@ -572,28 +579,28 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD CancelTrip.
-    " Change the status in the transaction buffer
-    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
-        ENTITY TripHeader
-        UPDATE FIELDS ( TripStatus )
-        WITH VALUE #( FOR ls_key IN keys
-                      ( %tky = ls_key-%tky
-                        TripStatus = 'Cancelled' ) )
-        FAILED failed
-        REPORTED reported.
-
-    " read the records that are modified
-    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
-        ENTITY TripHeader
-        ALL FIELDS WITH CORRESPONDING #( keys )
-        RESULT DATA(lt_result).
-
-    " Send as result to update the UI
-    result = VALUE #( FOR ls_result IN lt_result
-                      ( %tky = ls_result-%tky
-                        %param = ls_result ) ).
-  ENDMETHOD.
+*  METHOD CancelTrip.
+*    " Change the status in the transaction buffer
+*    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+*        ENTITY TripHeader
+*        UPDATE FIELDS ( TripStatus )
+*        WITH VALUE #( FOR ls_key IN keys
+*                      ( %tky = ls_key-%tky
+*                        TripStatus = 'Cancelled' ) )
+*        FAILED failed
+*        REPORTED reported.
+*
+*    " read the records that are modified
+*    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+*        ENTITY TripHeader
+*        ALL FIELDS WITH CORRESPONDING #( keys )
+*        RESULT DATA(lt_result).
+*
+*    " Send as result to update the UI
+*    result = VALUE #( FOR ls_result IN lt_result
+*                      ( %tky = ls_result-%tky
+*                        %param = ls_result ) ).
+*  ENDMETHOD.
 
   METHOD Unlock.
 

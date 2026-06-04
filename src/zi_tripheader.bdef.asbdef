@@ -17,7 +17,7 @@ late numbering
 
   // Field details
   field ( readonly ) TripID, DriverName, DriverMobile;
-  field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace;
+  field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace, SourceID, DestinationID;
   //  Dynamic feature control
   field ( features : instance ) TripStatus;
 
@@ -38,10 +38,10 @@ late numbering
   // Action details
   action ( features : instance ) StartTrip result [1] $self;
   action ( features : instance ) Settle result [1] $self;
-  action ( features : instance ) CancelTrip result [1] $self;
+//  action ( features : instance ) CancelTrip result [1] $self;
   action ( features : instance ) EmergencyLockdown result [1] $self;
   action ( features : instance ) Unlock result [1] $self;
-  action AddNewLocation parameter za_location result [1] $self;
+  action ( features : instance ) AddNewLocation parameter za_location result [1] $self;
 
   // Determination Details
   determination FillDriverDetails on modify { field VehicleNumber; }

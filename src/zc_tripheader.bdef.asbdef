@@ -19,7 +19,7 @@ use etag
   use action StartTrip;
   use action Unlock;
   use action Settle;
-  use action CancelTrip;
+//  use action CancelTrip;
   use action AddNewLocation;
   use action EmergencyLockdown;
 
