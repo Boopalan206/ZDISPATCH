@@ -135,13 +135,17 @@ annotate entity ZC_TripHeader with
 
   @EndUserText.label: 'Trip Created Date'
   @UI : {
-      selectionField: [{ position: 20, element: 'CreateAt' }],
       lineItem: [{ position: 20 }],
       fieldGroup: [{ qualifier: 'AdminFields', position: 20 }]
   }
   CreateAt;
 
-  @UI.hidden: true
+  @UI  : { 
+    selectionField: [{ position: 20, element: 'CreateAt' }]
+  }
+  @Consumption : { 
+    filter : { selectionType: #SINGLE }
+  }
   TripDate;
 
   @EndUserText.label: 'Vehicle Number'

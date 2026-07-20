@@ -3,7 +3,6 @@
 {
 "FROM":
 [
-"ZI_DRIVER",
 "ZI_LOADTYPEVH",
 "ZTAB_TRIPHEADER"
 ],

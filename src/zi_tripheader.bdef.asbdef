@@ -16,7 +16,7 @@ late numbering
   delete ( features : instance );
 
   // Field details
-  field ( readonly ) TripID, DriverName, DriverMobile;
+  field ( readonly ) TripID;
   field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace, SourceID, DestinationID;
   //  Dynamic feature control
   field ( features : instance ) TripStatus;
@@ -38,18 +38,20 @@ late numbering
   // Action details
   action ( features : instance ) StartTrip result [1] $self;
   action ( features : instance ) Settle result [1] $self;
-//  action ( features : instance ) CancelTrip result [1] $self;
+  //  action ( features : instance ) CancelTrip result [1] $self;
   action ( features : instance ) EmergencyLockdown result [1] $self;
   action ( features : instance ) Unlock result [1] $self;
   action ( features : instance ) AddNewLocation parameter za_location result [1] $self;
 
   // Determination Details
+  determination FillTripDate on save { create; }
   determination FillDriverDetails on modify { field VehicleNumber; }
   determination SetDefaultStatus on modify { create; }
   determination fillPlaceDescriptions
-    on modify {
-        field SourceID, DestinationID;
-    }
+  on modify
+  {
+    field SourceID, DestinationID;
+  }
 
   // Validation details
   validation ValidateMandatoryFields
@@ -64,17 +66,18 @@ late numbering
   side effects
   {
     field VehicleNumber
-        affects field DriverID,
-            field DriverName,
-            field DriverMobile;
+        affects field DriverID;
+
+    field DriverID
+        affects entity _Driver;
 
     entity _Incident affects field TripTotalExpense;
 
     action AddNewLocation
-        affects entity _Source,
-                entity _Destination,
-                field SourceID,
-                field DestinationID;
+    affects entity _Source,
+        entity _Destination,
+        field SourceID,
+        field DestinationID;
 
     field SourceID affects field StartPlace;
     field DestinationID affects field EndPlace;
@@ -102,6 +105,7 @@ late numbering
       LastChangedBy      = last_changed_by;
       LastChangedAt      = last_changed_at;
       LocalLastChangedAt = local_last_changed_at;
+
     }
 }
 
@@ -141,18 +145,19 @@ late numbering
     field IncidentAmount;
   }
   determination DetermineIncidentStatus
-    on modify {
-        create;
-        field IncidentCategory;
-    }
+  on modify
+  {
+    create;
+    field IncidentCategory;
+  }
 
   side effects
   {
     field IncidentAmount
-        affects entity _TripHeader;
+    affects entity _TripHeader;
     field IncidentCategory
-        affects entity _TripHeader,
-                field ReceiptStatus;
+    affects entity _TripHeader,
+        field ReceiptStatus;
   }
 
   mapping for ztab_tripitem

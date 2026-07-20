@@ -3,6 +3,7 @@
 {
 "FROM":
 [
+"ZI_DRIVER",
 "ZI_TRIPHEADER"
 ],
 "ASSOCIATED":

@@ -327,6 +327,9 @@ CLASS lhc_TripHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS EmergencyLockdown FOR MODIFY
       IMPORTING keys FOR ACTION TripHeader~EmergencyLockdown RESULT result.
 
+    METHODS FillTripDate FOR DETERMINE ON SAVE
+      IMPORTING keys FOR TripHeader~FillTripDate.
+
 ENDCLASS.
 
 CLASS lhc_TripHeader IMPLEMENTATION.
@@ -362,6 +365,10 @@ CLASS lhc_TripHeader IMPLEMENTATION.
       WHERE v_reg_no = @lt_vehicle_query-VehicleNumber
       INTO TABLE @DATA(lt_v_driver).
 
+    SELECT FROM ztab_driver
+        FIELDS d_id, d_full_name, d_mobile
+        INTO TABLE @DATA(lt_driver_details).
+
     DATA: lt_update TYPE TABLE FOR UPDATE ZI_TripHeader.
 
     LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<ls_trips>).
@@ -370,12 +377,20 @@ CLASS lhc_TripHeader IMPLEMENTATION.
             AND lt_v_driver[ v_reg_no = <ls_trips>-VehicleNumber ]-d_id IS NOT INITIAL
             AND lt_v_driver[ v_reg_no = <ls_trips>-VehicleNumber ]-d_id NE <ls_trips>-DriverID.
 
+        DATA(driverid) = lt_v_driver[ v_reg_no = <ls_trips>-VehicleNumber ]-d_id.
+        DATA(drivername) = lt_driver_details[ d_id = driverid ]-d_full_name.
+        DATA(drivermobile) = lt_driver_details[ d_id = driverid ]-d_mobile.
+
         MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
             ENTITY TripHeader
             UPDATE FIELDS ( DriverID )
             WITH VALUE #( ( %tky         = <ls_trips>-%tky
-                            DriverID     = lt_v_driver[ v_reg_no = <ls_trips>-VehicleNumber ]-d_id
+                            DriverID     = driverid
+*                            DriverName = drivername
+*                            DriverMobile = drivermobile
                             %control-DriverID = if_abap_behv=>mk-on
+*                            %control-DriverName = if_abap_behv=>mk-on
+*                            %control-DriverMobile = if_abap_behv=>mk-on
                           )
                         ).
       ELSEIF lt_v_driver[ v_reg_no = <ls_trips>-VehicleNumber ]-d_id IS INITIAL. " Driver not assigned to vehicle
@@ -534,8 +549,8 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                                               ELSE  if_abap_behv=>fc-o-enabled
                                           )
                            %action-AddNewLocation = COND #( WHEN ls_trip-TripStatus = 'Settled'
-                                                                then if_abap_behv=>fc-o-disabled
-                                                            else if_abap_behv=>fc-o-enabled
+                                                                THEN if_abap_behv=>fc-o-disabled
+                                                            ELSE if_abap_behv=>fc-o-enabled
                                                           )
                         )
                     ).
@@ -767,6 +782,36 @@ CLASS lhc_TripHeader IMPLEMENTATION.
     result = VALUE #( FOR ls_result IN lt_result
                       ( %tky = ls_result-%tky
                         %param = ls_result ) ).
+
+  ENDMETHOD.
+
+  METHOD FillTripDate.
+
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripHeader
+        FIELDS ( TripDate )
+        WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_tripheader).
+
+    " 2. Filter out instances that already have a TripDate set (optional but best practice)
+    DELETE lt_tripheader WHERE TripDate IS NOT INITIAL.
+
+    IF lt_tripheader IS NOT INITIAL.
+      " 3. Update the TripDate to the current system date (cl_abap_context_info)
+      MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripHeader
+          UPDATE FIELDS ( TripDate )
+          WITH VALUE #( FOR ls_header IN lt_tripheader (
+                          %tky     = ls_header-%tky
+                          TripDate = cl_abap_context_info=>get_system_date( )
+                          %control-TripDate = if_abap_behv=>mk-on
+                        ) )
+        FAILED DATA(lt_failed)
+        REPORTED DATA(lt_reported).
+
+      " 4. Pass any reporting/errors back to the RAP framework if necessary
+      reported = CORRESPONDING #( DEEP lt_reported ).
+    ENDIF.
 
   ENDMETHOD.
 

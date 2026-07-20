@@ -24,14 +24,14 @@ define root view entity ZC_TripHeader
       TripTotalExpense,
       ReviewReason,
       PreviousStatus,
-      DriverName,
-      DriverMobile,
       CreatedBy,
       CreateAt,
       LastChangedBy,
       LastChangedAt,
       LocalLastChangedAt,
       LoadDescription,
+      _Driver.FullName as DriverName,
+      _Driver.Mobile as DriverMobile,
       
       /* Associations */
       _Driver,
