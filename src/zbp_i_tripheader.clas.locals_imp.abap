@@ -521,8 +521,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                                                             THEN if_abap_behv=>fc-o-enabled
                                                            ELSE  if_abap_behv=>fc-o-disabled
                                                       )
-                            %action-Settle = COND #( WHEN ls_trip-TripStatus = 'Cancelled'
-                                                       OR ls_trip-TripStatus = 'Settled'
+                            %action-Settle = COND #( WHEN ls_trip-TripStatus = 'Settled'
                                                        OR ls_trip-TripStatus = 'Locked'
                                                             THEN if_abap_behv=>fc-o-disabled
                                                      ELSE  if_abap_behv=>fc-o-enabled
@@ -810,7 +809,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
         REPORTED DATA(lt_reported).
 
       " 4. Pass any reporting/errors back to the RAP framework if necessary
-      reported = CORRESPONDING #( DEEP lt_reported ).
+          reported = CORRESPONDING #( DEEP lt_reported ).
     ENDIF.
 
   ENDMETHOD.

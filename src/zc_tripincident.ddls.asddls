@@ -25,5 +25,6 @@ define view entity ZC_TripIncident
       /* Associations */
       _Currency,
       _TripHeader : redirected to parent ZC_TripHeader,
+      _IAttachment : redirected to composition child ZC_INC_ATT1,
       _Categories
 }

@@ -38,7 +38,20 @@ annotate entity ZC_TripIncident
             parentId: 'IncidentDetail',
             purpose: #STANDARD,
             targetQualifier: 'Info'
-        }]
+        },{
+            id         : 'idFiles',
+            label      : 'Files',
+            position   : 30,
+            type       : #IDENTIFICATION_REFERENCE,
+            targetQualifier: 'FILE'
+        },{
+          id: 'Files',
+          purpose: #STANDARD,
+          type :#LINEITEM_REFERENCE,
+          label: 'Incident File(s)',
+          targetElement: '_IAttachment',
+          position : 40
+       }]
     }
 
     @EndUserText.label: 'Incident'
@@ -113,6 +126,17 @@ annotate entity ZC_TripIncident
         dataPoint : { qualifier: 'Status_Info', title : 'Receipt Status' }
     }
     ReceiptStatus;
+    
+    @UI : { 
+        identification: [{ position: 45, qualifier: 'FILE' }]
+    }
+    IncidentAttachment;
+    
+    @UI.hidden: true
+    AttFileName;
+    
+    @UI.hidden:true
+    AttMimeType;
     
     @EndUserText.label: 'Incident Owner'
     @UI : { 

@@ -1,6 +1,10 @@
 managed implementation in class zbp_i_tripheader unique;
 strict ( 2 );
 with draft;
+
+
+
+
 define behavior for ZI_TripHeader alias TripHeader
 persistent table ztab_tripheader
 draft table zdtab_tripheader
@@ -22,7 +26,6 @@ late numbering
   field ( features : instance ) TripStatus;
 
   association _Incident { create; with draft; }
-
 
   // Draft area
   draft action Activate optimized;
@@ -66,10 +69,10 @@ late numbering
   side effects
   {
     field VehicleNumber
-        affects field DriverID;
+    affects field DriverID;
 
     field DriverID
-        affects entity _Driver;
+    affects entity _Driver;
 
     entity _Incident affects field TripTotalExpense;
 
@@ -105,9 +108,13 @@ late numbering
       LastChangedBy      = last_changed_by;
       LastChangedAt      = last_changed_at;
       LocalLastChangedAt = local_last_changed_at;
-
     }
 }
+
+
+
+
+
 
 define behavior for ZI_TripIncident alias TripIncident
 persistent table ztab_tripitem
@@ -126,6 +133,7 @@ late numbering
   field ( mandatory ) IncidentCategory, IncidentAmount, Currency, IncidentLocation;
 
   association _TripHeader { with draft; }
+  association _IAttachment { create; with draft; }
 
   action ( features : instance ) IncidentVerified result [1] $self;
 
@@ -176,5 +184,44 @@ late numbering
       LastChangedBy       = last_changed_by;
       LastChangedAt       = last_changed_at;
       LocalLastChangedAt  = local_last_changed_at;
+    }
+}
+
+
+
+
+
+define behavior for ZI_INC_ATT alias IncidentAttachment
+persistent table ztab_inc_att
+draft table zdtab_inc_att
+lock dependent by _TripHeader
+authorization dependent by _TripHeader
+late numbering
+//etag master <field_name>
+{
+  update;
+  delete;
+
+  // Field details
+  field ( readonly ) TripID, IId, FildId;
+  //  field ( readonly, numbering : managed ) FildId;
+  field ( mandatory ) FileName, IncidentAttachment;
+
+  association _TripIncident { with draft; }
+  association _TripHeader { with draft; }
+
+  mapping for ztab_inc_att
+    {
+      IId                = i_id;
+      TripID             = i_tripid;
+      FildId             = f_id;
+      IncidentAttachment = inc_att;
+      FileMimetype       = mimetype;
+      FileName           = filename;
+      FileCreatedBy      = created_by;
+      CreateAt           = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
     }
 }
