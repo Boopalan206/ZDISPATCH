@@ -194,8 +194,8 @@ late numbering
 define behavior for ZI_INC_ATT alias IncidentAttachment
 persistent table ztab_inc_att
 draft table zdtab_inc_att
-lock dependent by _TripHeader
-authorization dependent by _TripHeader
+lock dependent by _Root
+authorization dependent by _Root
 late numbering
 //etag master <field_name>
 {
@@ -208,7 +208,7 @@ late numbering
   field ( mandatory ) FileName, IncidentAttachment;
 
   association _TripIncident { with draft; }
-  association _TripHeader { with draft; }
+  ancestor association _Root{ with draft; }
 
   mapping for ztab_inc_att
     {

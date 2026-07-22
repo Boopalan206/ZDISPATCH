@@ -4,10 +4,9 @@
 @Metadata.ignorePropagatedAnnotations: true
 define view entity ZI_INC_ATT
   as select from ztab_inc_att
-  association to parent ZI_TripIncident as _TripIncident on  $projection.IId    = _TripIncident.IncidentID
-                                                         and $projection.TripID = _TripIncident.TripID
-  association to ZI_TripHeader          as _TripHeader   on  $projection.TripID = _TripHeader.TripID
-
+  association        to parent ZI_TripIncident as _TripIncident on  $projection.IId    = _TripIncident.IncidentID
+                                                                and $projection.TripID = _TripIncident.TripID
+  association [1..1] to ZI_TripHeader as _Root on $projection.TripID = _Root.TripID
 {
   key i_id                  as IId,
   key i_tripid              as TripID,
@@ -31,6 +30,6 @@ define view entity ZI_INC_ATT
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
       local_last_changed_at as LocalLastChangedAt,
 
-      _TripHeader,
+      _Root,
       _TripIncident
 }

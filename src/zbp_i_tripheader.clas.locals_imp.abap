@@ -50,6 +50,27 @@ CLASS lsc_zi_tripheader IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
 
+    "3. Handle incident Attachment numbering (36-digit UUID)
+    IF mapped-incidentattachment is not initial.
+        LOOP AT mapped-incidentattachment REFERENCE INTO DATA(lr_att).
+        TRY.
+            " Generate a standard 36-digit UUID
+            lr_att->FildId = cl_system_uuid=>create_uuid_c36_static( ).
+            lr_att->IId = lr_att->%tmp-IId.
+            lr_att->TripID = lr_att->%tmp-TripID.
+*            RAISE EXCEPTION TYPE cx_uuid_error.
+          CATCH cx_uuid_error.
+            " If UUID generation fails, we report the error back to the user
+            APPEND VALUE #( %pid = lr_att->%pid
+                            %msg = new_message_with_text(
+                                        severity = if_abap_behv_message=>severity-error
+                                        text       = 'UUID not generated for Incident Record(s)'
+                                   )
+                          ) TO reported-incidentattachment.
+        ENDTRY.
+      ENDLOOP.
+    ENDIF.
+
   ENDMETHOD.
 
 ENDCLASS.

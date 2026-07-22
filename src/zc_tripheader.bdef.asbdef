@@ -33,5 +33,15 @@ define behavior for ZC_TripIncident alias TripIncident
   use delete;
 
   use association _TripHeader { with draft; }
+  use association _IAttachment {create; with draft;}
   use action IncidentVerified;
+}
+
+define behavior for ZC_INC_ATT1 alias IncidentAttachment
+{
+  use update;
+  use delete;
+
+  use association _TripIncident { with draft; }
+  use association _Root { with draft; }
 }

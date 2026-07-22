@@ -1,6 +1,6 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Consumption View - Attachment'
-@Metadata.ignorePropagatedAnnotations: true
+@Metadata.allowExtensions: true
 define view entity ZC_INC_ATT1
   as projection on ZI_INC_ATT
 {
@@ -23,6 +23,6 @@ define view entity ZC_INC_ATT1
       LocalLastChangedAt,
 
       /* Associations */
-      _TripHeader,
+      _Root : redirected to ZC_TripHeader,
       _TripIncident : redirected to parent ZC_TripIncident
 }

@@ -4,8 +4,8 @@
 @Metadata.ignorePropagatedAnnotations: true
 define view entity ZI_TripIncident
   as select from ztab_tripitem
-  composition [0..*] of ZI_INC_ATT as _IAttachment
   association to parent ZI_TripHeader as _TripHeader on $projection.TripID = _TripHeader.TripID
+  composition [0..*] of ZI_INC_ATT as _IAttachment
   association to I_CurrencyStdVH      as _Currency   on $projection.Currency = _Currency.Currency
   association to ZI_IncCategVH        as _Categories on $projection.IncidentCategory = _Categories.Category
 {
