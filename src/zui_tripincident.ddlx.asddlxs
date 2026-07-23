@@ -39,13 +39,12 @@ annotate entity ZC_TripIncident
             purpose: #STANDARD,
             targetQualifier: 'Info'
         },{
-          id: 'Files',
-          purpose: #STANDARD,
-          type :#LINEITEM_REFERENCE,
-          label: 'Incident File(s)',
-          targetElement: '_IAttachment',
-          position : 30
-       }]
+            id: 'Files',
+            label : 'Attachments',
+            type : #LINEITEM_REFERENCE,
+            position : 20,    
+            targetElement: '_IAttachment'
+        }]
     }
 
     @EndUserText.label: 'Incident'

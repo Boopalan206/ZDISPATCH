@@ -1,0 +1,65 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+    headerInfo : {
+        title : { type: #STANDARD, value: 'FileName', label: 'Attachments' },
+        description : { value: 'FileCreatedBy' }
+    }
+}
+
+annotate entity ZC_INC_ATT1 with
+{
+
+  @UI.hidden: true
+  IId;
+  @UI.hidden: true
+  TripID;
+  @UI.hidden: true
+  FildId;
+
+  @UI : {
+      lineItem: [{ position: 10 }]
+  }
+  IncidentAttachment;
+
+  @UI.hidden: true
+  FileMimetype;
+
+  @UI : {
+      lineItem: [{ position: 20 }]
+  }
+  FileName;
+
+  @EndUserText.label: 'Attachment Created By'
+  @UI : {
+      lineItem: [{ position: 30 }]
+  }
+  FileCreatedBy;
+
+  @EndUserText.label: 'Uploaded at'
+  @UI : {
+    lineItem: [{ position: 40 }]
+  }
+  CreateAt;
+
+  @EndUserText.label: 'Modified By'
+  @UI : {
+    lineItem: [{ position: 50 }]
+  }
+  LastChangedBy;
+
+  @EndUserText.label: 'Modified At'
+  @UI : {
+    lineItem: [{ position: 60 }]
+  }
+  LastChangedAt;
+
+  @EndUserText.label: 'Modified At'
+  @UI : {
+    lineItem: [{ position: 70 }]
+  }
+  LocalLastChangedAt;
+
+  /* Associations */
+  /*_Root;*/
+  /*_TripIncident;   */
+}

@@ -128,7 +128,7 @@ late numbering
   delete;
 
   // Field details
-  field ( readonly ) IncidentID, TripID;
+  field ( readonly ) IncidentID, TripID, IncidentCreatedBy, CreateAt, LastChangedAt, LastChangedBy, LocalLastChangedAt;
   field ( readonly ) IncidentDate, ReceiptStatus;
   field ( mandatory ) IncidentCategory, IncidentAmount, Currency, IncidentLocation;
 
@@ -203,7 +203,7 @@ late numbering
   delete;
 
   // Field details
-  field ( readonly ) TripID, IId, FildId;
+  field ( readonly ) TripID, IId, FildId, FileCreatedBy, CreateAt, LastChangedAt, LastChangedBy, LocalLastChangedAt;
   //  field ( readonly, numbering : managed ) FildId;
   field ( mandatory ) FileName, IncidentAttachment;
 

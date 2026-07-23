@@ -99,13 +99,6 @@ annotate entity ZC_TripHeader with
                   actionGroupId: 'idObjectPageGroup',
                   position : 25
                 },
-//                { type: #FOR_ACTION,
-//                  dataAction: 'CancelTrip',
-//                  label: 'Cancelled',
-//                  iconUrl: 'sap-icon://cancel',
-//                  actionGroupId: 'idObjectPageGroup',
-//                  position : 30
-//                },
                 { 
                   type : #FOR_ACTION,
                   dataAction : 'EmergencyLockdown',
