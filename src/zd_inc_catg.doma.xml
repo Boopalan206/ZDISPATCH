@@ -83,6 +83,13 @@
      <DOMVALUE_L>WTHR</DOMVALUE_L>
      <DDTEXT>Weather Delay</DDTEXT>
     </DD07V>
+    <DD07V>
+     <DOMNAME>ZD_INC_CATG</DOMNAME>
+     <VALPOS>0011</VALPOS>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DOMVALUE_L>ABND</DOMVALUE_L>
+     <DDTEXT>Vehicle Abandonment</DDTEXT>
+    </DD07V>
    </DD07V_TAB>
   </asx:values>
  </asx:abap>

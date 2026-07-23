@@ -520,15 +520,16 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                         LET lv_can_lockdown = REDUCE abap_boolean(
                                                 INIT flag = abap_false
                                                 FOR ls_link IN lt_links WHERE ( source-%tky = ls_trip-%tky )
-                                                NEXT flag = COND #( WHEN flag = abap_true
-                                                                      THEN abap_true
-                                                                    WHEN lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory IS NOT INITIAL
-                                                                     AND ( lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'ACDT'
-                                                                           OR lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'BRKD' )
-                                                                     AND lt_incidents[ KEY id %tky = ls_link-target-%tky ]-ReceiptStatus = 'In-Progress'
-                                                                      THEN abap_true
-                                                                    ELSE abap_false
-                                                                  )
+                                                    NEXT flag = COND #( WHEN flag = abap_true
+                                                                          THEN abap_true
+                                                                        WHEN lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory IS NOT INITIAL
+                                                                         AND ( lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'ACDT'
+                                                                               OR lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'BRKD'
+                                                                               OR lt_incidents[ KEY id %tky = ls_link-target-%tky ]-IncidentCategory = 'ABND' )
+                                                                         AND lt_incidents[ KEY id %tky = ls_link-target-%tky ]-ReceiptStatus = 'In-Progress'
+                                                                          THEN abap_true
+                                                                        ELSE abap_false
+                                                                      )
                                               )
                         IN
                         (
