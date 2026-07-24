@@ -222,6 +222,8 @@ CLASS lhc_tripincident IMPLEMENTATION.
       APPEND VALUE #(
           %tky = ls_incident-%tky
           ReceiptStatus = COND #( WHEN ls_incident-IncidentCategory = 'BRKD'
+                                    OR ls_incident-IncidentCategory = 'ABND'
+                                    OR ls_incident-IncidentCategory = 'ACDT'
                                       THEN 'In-Progress'
                                   ELSE 'Not-Verified'
                                 )
