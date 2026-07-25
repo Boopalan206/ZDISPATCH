@@ -20,7 +20,7 @@ late numbering
   delete ( features : instance );
 
   // Field details
-  field ( readonly ) TripID;
+  field ( readonly ) TripID, ReviewReason, PreviousStatus;
   field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace, SourceID, DestinationID;
   //  Dynamic feature control
   field ( features : instance ) TripStatus;
@@ -42,7 +42,7 @@ late numbering
   action ( features : instance ) StartTrip result [1] $self;
   action ( features : instance ) Settle result [1] $self;
   //  action ( features : instance ) CancelTrip result [1] $self;
-  action ( features : instance ) EmergencyLockdown result [1] $self;
+  action ( features : instance ) EmergencyLockdown parameter ZA_LockdownReason result [1] $self;
   action ( features : instance ) Unlock result [1] $self;
   action ( features : instance ) AddNewLocation parameter za_location result [1] $self;
 

@@ -65,6 +65,14 @@ annotate entity ZC_TripHeader with
           purpose: #STANDARD,
           targetQualifier: 'Load'
       },{
+          id : 'LockdownInfo',
+          label : 'Lockdown Audit',
+          type : #IDENTIFICATION_REFERENCE,
+          position: 40,
+          parentId: 'TripDetail',
+          purpose: #STANDARD,
+          targetQualifier: 'LockdownAudit'
+      },{
           id: 'Incidents',
           purpose: #STANDARD,
           type :#LINEITEM_REFERENCE,
@@ -233,8 +241,18 @@ annotate entity ZC_TripHeader with
   }
   TripStatus;
   
-  @EndUserText.label: 'Review Reason'
+  @EndUserText.label: 'Lockdown Reason'
+  @UI : {
+      identification: [{ position: 10, qualifier: 'LockdownAudit' }],
+      multiLineText: true
+  }
   ReviewReason;
+  
+  @EndUserText.label: 'Previous Status'
+  @UI : {
+      identification: [{ position: 20, qualifier: 'LockdownAudit' }]
+  }
+  PreviousStatus;
 
   @EndUserText.label: 'Incident Expenses'
   @UI : {

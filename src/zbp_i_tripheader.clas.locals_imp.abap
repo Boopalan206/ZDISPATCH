@@ -51,8 +51,8 @@ CLASS lsc_zi_tripheader IMPLEMENTATION.
     ENDIF.
 
     "3. Handle incident Attachment numbering (36-digit UUID)
-    IF mapped-incidentattachment is not initial.
-        LOOP AT mapped-incidentattachment REFERENCE INTO DATA(lr_att).
+    IF mapped-incidentattachment IS NOT INITIAL.
+      LOOP AT mapped-incidentattachment REFERENCE INTO DATA(lr_att).
         TRY.
             " Generate a standard 36-digit UUID
             lr_att->FildId = cl_system_uuid=>create_uuid_c36_static( ).
@@ -617,40 +617,43 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
   ENDMETHOD.
 
-*  METHOD CancelTrip.
+  METHOD Unlock.
+
+    " Restore the stored status
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+      ENTITY TripHeader
+        FIELDS ( TripStatus PreviousStatus ReviewReason )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_trips).
+
+    LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
+      " Determine previous status to restore (fallback to default if initial)
+      DATA(lv_target_status) = COND #( WHEN <fs_trip>-PreviousStatus IS NOT INITIAL
+                                       THEN <fs_trip>-PreviousStatus
+                                       ELSE 'Planned' ). " Default active status
+
+      " Change the status in the transaction buffer
+      MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+          ENTITY TripHeader
+          UPDATE FIELDS ( TripStatus PreviousStatus )
+          WITH VALUE #( FOR ls_key IN keys
+                        ( %tky = ls_key-%tky
+                          TripStatus = lv_target_status
+                          PreviousStatus = '' ) )
+          FAILED failed
+          REPORTED reported.
+
+    ENDLOOP.
+
 *    " Change the status in the transaction buffer
 *    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
 *        ENTITY TripHeader
 *        UPDATE FIELDS ( TripStatus )
 *        WITH VALUE #( FOR ls_key IN keys
 *                      ( %tky = ls_key-%tky
-*                        TripStatus = 'Cancelled' ) )
+*                        TripStatus = 'Un-Locked' ) )
 *        FAILED failed
 *        REPORTED reported.
-*
-*    " read the records that are modified
-*    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
-*        ENTITY TripHeader
-*        ALL FIELDS WITH CORRESPONDING #( keys )
-*        RESULT DATA(lt_result).
-*
-*    " Send as result to update the UI
-*    result = VALUE #( FOR ls_result IN lt_result
-*                      ( %tky = ls_result-%tky
-*                        %param = ls_result ) ).
-*  ENDMETHOD.
-
-  METHOD Unlock.
-
-    " Change the status in the transaction buffer
-    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
-        ENTITY TripHeader
-        UPDATE FIELDS ( TripStatus )
-        WITH VALUE #( FOR ls_key IN keys
-                      ( %tky = ls_key-%tky
-                        TripStatus = 'Un-Locked' ) )
-        FAILED failed
-        REPORTED reported.
 
     " read the records that are modified
     READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
@@ -785,15 +788,49 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
   METHOD EmergencyLockdown.
 
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+    ENTITY TripHeader
+      FIELDS ( TripStatus PreviousStatus ReviewReason )
+      WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_trips).
+
+    LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
+      " Extract the parameter passed from the UI dialog
+      DATA(lv_reason) = keys[ KEY id %tky = <fs_trip>-%tky ]-%param-review_reason.
+
+      " 7. Validate empty reason
+      IF lv_reason IS INITIAL.
+        APPEND VALUE #( %tky = <fs_trip>-%tky ) TO failed-tripheader.
+        APPEND VALUE #( %tky = <fs_trip>-%tky
+                        %msg = new_message( id       = 'ZDISPATCH_MSGS'
+                                           number   = '006'
+                                           severity = if_abap_behv_message=>severity-error ) )
+          TO reported-tripheader.
+        CONTINUE.
+      ENDIF.
+
+      " Change the status in the transaction buffer
+      MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+          ENTITY TripHeader
+          UPDATE FIELDS ( TripStatus ReviewReason PreviousStatus )
+          WITH VALUE #( FOR ls_key IN keys
+                        ( %tky = ls_key-%tky
+                          TripStatus = 'Locked'
+                          ReviewReason = lv_reason
+                          PreviousStatus = <fs_trip>-TripStatus ) )
+          FAILED failed
+          REPORTED reported.
+    ENDLOOP.
+
     " Change the status in the transaction buffer
-    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
-        ENTITY TripHeader
-        UPDATE FIELDS ( TripStatus )
-        WITH VALUE #( FOR ls_key IN keys
-                      ( %tky = ls_key-%tky
-                        TripStatus = 'Locked' ) )
-        FAILED failed
-        REPORTED reported.
+*    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+*        ENTITY TripHeader
+*        UPDATE FIELDS ( TripStatus )
+*        WITH VALUE #( FOR ls_key IN keys
+*                      ( %tky = ls_key-%tky
+*                        TripStatus = 'Locked' ) )
+*        FAILED failed
+*        REPORTED reported.
 
     " read the records that are modified
     READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
@@ -833,7 +870,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
         REPORTED DATA(lt_reported).
 
       " 4. Pass any reporting/errors back to the RAP framework if necessary
-          reported = CORRESPONDING #( DEEP lt_reported ).
+      reported = CORRESPONDING #( DEEP lt_reported ).
     ENDIF.
 
   ENDMETHOD.
