@@ -360,10 +360,10 @@ CLASS lhc_TripHeader IMPLEMENTATION.
   METHOD get_instance_authorizations.
 
     " 1. Perform authorization checks
-    AUTHORITY-CHECK OBJECT 'ZDISPATCH_A' ID 'ACTVT' FIELD 'A5'.
+    AUTHORITY-CHECK OBJECT 'ZDISPTCH_A' ID 'ACTVT' FIELD 'A5'.
     DATA(lv_auth_unlock) = xsdbool( sy-subrc = 0 ).
 
-    AUTHORITY-CHECK OBJECT 'ZDISPATCH_A' ID 'ACTVT' FIELD 'A7'.
+    AUTHORITY-CHECK OBJECT 'ZDISPTCH_A' ID 'ACTVT' FIELD 'A7'.
     DATA(lv_auth_settle) = xsdbool( sy-subrc = 0 ).
 
     " 2. Read entities to evaluate state conditions
