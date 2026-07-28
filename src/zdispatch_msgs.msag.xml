@@ -62,6 +62,30 @@
      <MSGNR>009</MSGNR>
      <TEXT>Enter Weight | UnitOfMeasure</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Enter Rate | Currency</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Trip cannot be started in it current state</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Trip cannot be settled in its current state</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Only &apos;Locked&apos; trip can be &apos;Un-Locked&apos;</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

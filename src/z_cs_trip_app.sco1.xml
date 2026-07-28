@@ -55,27 +55,27 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUE>Change, Create or generate, Write with filter, Display, Display reports</VALUE>
+          <VALUE>Write with filter, Create or generate, Display reports, Change, Display</VALUE>
           <VALUES>
            <item>
-            <UUID>3uPItJNeH+GiznV4p4P/4g==</UUID>
-            <LOW_VALUE>02</LOW_VALUE>
+            <UUID>3uPItJNeH+GiznV4p4Rf4g==</UUID>
+            <LOW_VALUE>A7</LOW_VALUE>
            </item>
            <item>
             <UUID>3uPItJNeH+GiznV4p4Pf4g==</UUID>
             <LOW_VALUE>01</LOW_VALUE>
            </item>
            <item>
-            <UUID>3uPItJNeH+GiznV4p4Rf4g==</UUID>
-            <LOW_VALUE>A7</LOW_VALUE>
+            <UUID>3uPItJNeH+GiznV4p4Q/4g==</UUID>
+            <LOW_VALUE>A5</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>3uPItJNeH+GiznV4p4P/4g==</UUID>
+            <LOW_VALUE>02</LOW_VALUE>
            </item>
            <item>
             <UUID>3uPItJNeH+GiznV4p4Qf4g==</UUID>
             <LOW_VALUE>03</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>3uPItJNeH+GiznV4p4Q/4g==</UUID>
-            <LOW_VALUE>A5</LOW_VALUE>
            </item>
           </VALUES>
           <TEXT>Activity</TEXT>

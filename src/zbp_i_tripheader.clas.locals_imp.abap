@@ -374,18 +374,18 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
 
     LOOP AT lt_trips INTO DATA(ls_trip).
-        result = value #( BASE result
-                          ( %tky = ls_trip-%tky
-                            %action-Unlock = cond #( when lv_auth_unlock = abap_true and ls_trip-TripStatus = 'Locked'
-                                                        then if_abap_behv=>fc-o-enabled
-                                                     else if_abap_behv=>fc-o-disabled
-                                                   )
-                            %action-Settle = cond #( when lv_auth_settle = abap_true and ls_trip-TripStatus = 'Settled'
-                                                        then if_abap_behv=>fc-o-enabled
-                                                     else if_abap_behv=>fc-o-disabled
-                                                   )
-                           )
-                        ).
+      result = VALUE #( BASE result
+                        ( %tky = ls_trip-%tky
+                          %action-Unlock = COND #( WHEN lv_auth_unlock = abap_true AND ls_trip-TripStatus = 'Locked'
+                                                      THEN if_abap_behv=>fc-o-enabled
+                                                   ELSE if_abap_behv=>fc-o-disabled
+                                                 )
+                          %action-Settle = COND #( WHEN lv_auth_settle = abap_true AND ls_trip-TripStatus = 'Settled'
+                                                      THEN if_abap_behv=>fc-o-enabled
+                                                   ELSE if_abap_behv=>fc-o-disabled
+                                                 )
+                         )
+                      ).
     ENDLOOP.
 
   ENDMETHOD.
@@ -485,7 +485,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
     READ ENTITIES OF zi_tripheader IN LOCAL MODE
     ENTITY TripHeader
-      FIELDS ( VehicleNumber StartPlace EndPlace LoadType )
+      FIELDS ( VehicleNumber StartPlace EndPlace LoadType Weight WeightUnit RatePerUnit Currency  )
       WITH CORRESPONDING #( keys )
     RESULT DATA(trips).
 
@@ -559,7 +559,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                           id       = 'ZDISPATCH_MSGS'
                           number   = '009'
                           severity = if_abap_behv_message=>severity-error )
-                        %element-VehicleNumber = if_abap_behv=>mk-on
+                        %element-weight = if_abap_behv=>mk-on
                       ) TO reported-tripheader.
       ENDIF.
 
@@ -570,9 +570,9 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                         %state_area = 'VALIDATE_RATEPERUNIT'
                         %msg = new_message(
                           id       = 'ZDISPATCH_MSGS'
-                          number   = '009'
+                          number   = '010'
                           severity = if_abap_behv_message=>severity-error )
-                        %element-VehicleNumber = if_abap_behv=>mk-on
+                        %element-rateperunit = if_abap_behv=>mk-on
                       ) TO reported-tripheader.
       ENDIF.
 
@@ -616,22 +616,22 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                         (
                             %tky = ls_trip-%tky
 
-                            " --- Field Controls (Freeze upon Settled or Locked) ---
-                            %field-Weight      = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
-                                                         THEN if_abap_behv=>fc-f-read_only
-                                                         ELSE if_abap_behv=>fc-f-mandatory )
-
-                            %field-WeightUnit  = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
-                                                         THEN if_abap_behv=>fc-f-read_only
-                                                         ELSE if_abap_behv=>fc-f-mandatory )
-
-                            %field-RatePerUnit = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
-                                                         THEN if_abap_behv=>fc-f-read_only
-                                                         ELSE if_abap_behv=>fc-f-mandatory )
-
-                            %field-Currency    = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
-                                                         THEN if_abap_behv=>fc-f-read_only
-                                                         ELSE if_abap_behv=>fc-f-mandatory )
+*                            " --- Field Controls (Freeze upon Settled or Locked) ---
+*                            %field-Weight      = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
+*                                                         THEN if_abap_behv=>fc-f-read_only
+*                                                         ELSE if_abap_behv=>fc-f-mandatory )
+*
+*                            %field-WeightUnit  = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
+*                                                         THEN if_abap_behv=>fc-f-read_only
+*                                                         ELSE if_abap_behv=>fc-f-mandatory )
+*
+*                            %field-RatePerUnit = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
+*                                                         THEN if_abap_behv=>fc-f-read_only
+*                                                         ELSE if_abap_behv=>fc-f-mandatory )
+*
+*                            %field-Currency    = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
+*                                                         THEN if_abap_behv=>fc-f-read_only
+*                                                         ELSE if_abap_behv=>fc-f-mandatory )
 
                             %action-StartTrip = COND #( WHEN ls_trip-TripStatus = 'Planned'
                                                           OR ls_trip-TripStatus = 'Un-Locked'
@@ -679,11 +679,38 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
   METHOD StartTrip.
 
+
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY TripHeader FIELDS ( TripStatus )
+        WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_trips).
+
+    DATA lt_valid_keys LIKE keys.
+
+    LOOP AT keys INTO DATA(ls_key).
+      DATA(ls_trip) = VALUE #( lt_trips[ KEY id %tky = ls_key-%tky ] OPTIONAL ).
+
+      IF ls_trip-TripStatus <> 'Planned' AND ls_trip-TripStatus <> 'Un-Locked'.
+        APPEND VALUE #( %tky = ls_key-%tky ) TO failed-tripheader.
+        APPEND VALUE #( %tky = ls_key-%tky
+                        %msg = new_message(
+                                 id       = 'ZDISPATCH_MSGS'
+                                 number   = '011'   " Trip cannot be started in its current status
+                                 severity = if_abap_behv_message=>severity-error )
+                      ) TO reported-tripheader.
+        CONTINUE.
+      ENDIF.
+
+      APPEND ls_key TO lt_valid_keys.
+    ENDLOOP.
+
+    CHECK lt_valid_keys IS NOT INITIAL.
+
     " Change the status in the transaction buffer
     MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
         ENTITY TripHeader
         UPDATE FIELDS ( TripStatus )
-        WITH VALUE #( FOR ls_key IN keys
+        WITH VALUE #( FOR ls_v IN lt_valid_keys
                       ( %tky = ls_key-%tky
                         TripStatus = 'In-Transit' ) )
         FAILED failed
@@ -724,33 +751,33 @@ CLASS lhc_TripHeader IMPLEMENTATION.
       RESULT DATA(lt_trips).
 
     LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
-      " Determine previous status to restore (fallback to default if initial)
-      DATA(lv_target_status) = COND #( WHEN <fs_trip>-PreviousStatus IS NOT INITIAL
-                                       THEN <fs_trip>-PreviousStatus
-                                       ELSE 'Planned' ). " Default active status
 
-      " Change the status in the transaction buffer
-      MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
-          ENTITY TripHeader
-          UPDATE FIELDS ( TripStatus PreviousStatus )
-          WITH VALUE #( FOR ls_key IN keys
-                        ( %tky = ls_key-%tky
-                          TripStatus = lv_target_status
-                          PreviousStatus = '' ) )
-          FAILED failed
-          REPORTED reported.
+      IF <fs_trip>-TripStatus EQ 'Locked'.
+        " Determine previous status to restore (fallback to default if initial)
+        DATA(lv_target_status) = COND #( WHEN <fs_trip>-PreviousStatus IS NOT INITIAL
+                                            THEN <fs_trip>-PreviousStatus
+                                         ELSE 'Planned' ). " Default active status
+
+        " Change the status in the transaction buffer
+        MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
+            ENTITY TripHeader
+            UPDATE FIELDS ( TripStatus PreviousStatus )
+            WITH VALUE #( FOR ls_key IN keys
+                          ( %tky = ls_key-%tky
+                            TripStatus = lv_target_status
+                            PreviousStatus = '' ) )
+            FAILED failed
+            REPORTED reported.
+      ELSE. " return error message
+        APPEND VALUE #( %tky = <fs_trip>-%tky ) TO failed-tripheader.
+        APPEND VALUE #( %tky = <fs_trip>-%tky
+                        %msg = new_message( id       = 'ZDISPATCH_MSGS'
+                                           number   = '012'
+                                           severity = if_abap_behv_message=>severity-error ) )
+          TO reported-tripheader.
+      ENDIF.
 
     ENDLOOP.
-
-*    " Change the status in the transaction buffer
-*    MODIFY ENTITIES OF ZI_TripHeader IN LOCAL MODE
-*        ENTITY TripHeader
-*        UPDATE FIELDS ( TripStatus )
-*        WITH VALUE #( FOR ls_key IN keys
-*                      ( %tky = ls_key-%tky
-*                        TripStatus = 'Un-Locked' ) )
-*        FAILED failed
-*        REPORTED reported.
 
     " read the records that are modified
     READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
@@ -778,14 +805,13 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
     LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
 
-      " Input Validation
-      IF <fs_trip>-Weight IS INITIAL OR <fs_trip>-RatePerUnit IS INITIAL
-         OR <fs_trip>-Currency IS INITIAL OR <fs_trip>-WeightUnit IS INITIAL.
+      " Check the current state of the trip
+      IF <fs_trip>-TripStatus EQ 'In-Transit'.
 
         APPEND VALUE #( %tky = <fs_trip>-%tky ) TO failed-tripheader.
         APPEND VALUE #( %tky = <fs_trip>-%tky
                         %msg = new_message( id       = 'ZDISPATCH_MSGS'
-                                           number   = '007'
+                                           number   = '012'
                                            severity = if_abap_behv_message=>severity-error ) )
           TO reported-tripheader.
         CONTINUE.
