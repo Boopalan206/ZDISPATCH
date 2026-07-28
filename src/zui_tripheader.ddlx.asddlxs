@@ -24,17 +24,35 @@ annotate entity ZC_TripHeader with
           label: 'Administrative info',
           position : 10
       },{
+          id : 'FreightHeader',
+          purpose: #HEADER,
+          type : #DATAPOINT_REFERENCE,
+          targetQualifier: 'FreightDP',
+          position : 20
+      },{
+          id : 'CommissionHeader',
+          purpose: #HEADER,
+          type : #DATAPOINT_REFERENCE,
+          targetQualifier: 'CommissionDP',
+          position : 30
+      },{
           id : 'ExpenseHeader',
           purpose: #HEADER,
           type : #DATAPOINT_REFERENCE,
           targetQualifier: 'TotalExpense',
-          position : 20
+          position : 30
+      },{
+          id : 'ProfitHeader',
+          purpose: #HEADER,
+          type : #DATAPOINT_REFERENCE,
+          targetQualifier: 'ProfitDP',
+          position : 40
       },{
           id : 'StatusHeader',
           purpose: #HEADER,
           type : #DATAPOINT_REFERENCE,
           targetQualifier: 'Statusinfo',
-          position : 30
+          position : 50
       },{
           id: 'TripDetail',
           label: 'Trip',
@@ -73,12 +91,24 @@ annotate entity ZC_TripHeader with
           purpose: #STANDARD,
           targetQualifier: 'LockdownAudit'
       },{
+          id: 'SettlementSection',
+          label: 'Settlement & Inputs',
+          type: #COLLECTION,
+          position: 20
+      },{
+          id: 'SettlementInputs',
+          label: 'Calculation Parameters',
+          type: #FIELDGROUP_REFERENCE,
+          parentId: 'SettlementSection',
+          targetQualifier: 'SettlementInputsGroup',
+          position: 10
+      },{
           id: 'Incidents',
           purpose: #STANDARD,
           type :#LINEITEM_REFERENCE,
           label: 'Trip Incidents',
           targetElement: '_Incident',
-          position : 20
+          position : 30
       }]
   }
 
@@ -254,12 +284,56 @@ annotate entity ZC_TripHeader with
   }
   PreviousStatus;
 
+  @EndUserText.label: 'Weight'
+  @UI: { fieldGroup: [{ qualifier: 'SettlementInputsGroup', position: 10 }] }
+  Weight;
+
+  @EndUserText.label: 'Weight Unit'
+  @UI: { fieldGroup: [{ qualifier: 'SettlementInputsGroup', position: 20 }], hidden : true }
+  @Consumption.valueHelpDefinition: [{ 
+    entity: { name: 'I_UnitOfMeasure', element: 'UnitOfMeasure' } 
+  }]
+  WeightUnit;
+
+  @EndUserText.label: 'Rate / Unit'
+  @UI: { fieldGroup: [{ qualifier: 'SettlementInputsGroup', position: 30 }] }
+  RatePerUnit;
+
+  @EndUserText.label: 'Currency'
+  @UI: { fieldGroup: [{ qualifier: 'SettlementInputsGroup', position: 40 }], hidden : true }
+  @Consumption : { 
+        valueHelpDefinition: [{ 
+            entity : { name: 'I_CurrencyStdVH', element: 'Currency' }
+        }]
+    }
+  Currency;
+
+  @EndUserText.label: 'Freight Amount'
+  @UI : {
+      lineItem: [{ position: 91, importance: #MEDIUM }],
+      dataPoint : { qualifier: 'FreightDP', title: 'Freight Revenue' }
+  }
+  FreightAmount;
+
+  @EndUserText.label: 'Driver Commission'
+  @UI : {
+      dataPoint : { qualifier: 'CommissionDP', title: 'Driver Commission' }
+  }
+  DriverCommission;
+
   @EndUserText.label: 'Incident Expenses'
   @UI : {
       lineItem: [{ position: 95 }],
       dataPoint : { qualifier: 'TotalExpense', title: 'Total Expense' }
   }
   TripTotalExpense;
+  
+  @EndUserText.label: 'Net Profit'
+  @UI : {
+      lineItem: [{ position: 96, importance: #HIGH }],
+      dataPoint : { qualifier: 'ProfitDP', title: 'Net Trip Profit' }
+  }
+  NetProfit;
 
   @EndUserText.label: 'Created By'
   @UI: {

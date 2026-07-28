@@ -28,7 +28,7 @@ CLASS ZCL_FILL_MDATA IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     clear_all_tables( out ).
     fill_master_data( out ). " Generates mt_drivers with UUIDs
-    fill_trip_data( out ).   " Uses mt_drivers to link Trips
+*    fill_trip_data( out ).   " Uses mt_drivers to link Trips
   ENDMETHOD.
 
 
@@ -47,15 +47,15 @@ CLASS ZCL_FILL_MDATA IMPLEMENTATION.
         " 1. Prepare Driver Data
         mt_drivers = VALUE #(
           ( d_id = cl_system_uuid=>create_uuid_c36_static( ) d_full_name = 'Magudeswaran' d_mobile = '9876543210' d_emobile = '9876543211'
-            d_license = 'TN52 20150001467' d_lexpiry = '20280101' d_govid = 'Aadhar' d_aadhar = '5566778899001122' d_status = 'Active' )
+            d_license = 'TN52 20150001467' d_lexpiry = '20280101' d_govid = 'Aadhar' d_aadhar = '5566778899001122' d_status = 'Active' d_comm_pct = '14.00' )
           ( d_id = cl_system_uuid=>create_uuid_c36_static( ) d_full_name = 'Ragupathi'    d_mobile = '9123456780' d_emobile = '9123456781'
-            d_license = 'TN30 20180009921' d_lexpiry = '20300515' d_govid = 'PAN'    d_pan = 'ABCDE1234F'    d_status = 'Active' )
+            d_license = 'TN30 20180009921' d_lexpiry = '20300515' d_govid = 'PAN'    d_pan = 'ABCDE1234F'    d_status = 'Active' d_comm_pct = '14.00' )
           ( d_id = cl_system_uuid=>create_uuid_c36_static( ) d_full_name = 'Sivalingam'   d_mobile = '9444012345' d_emobile = '9444012346'
-            d_license = 'KA01 20120004321' d_lexpiry = '20271120' d_govid = 'Aadhar' d_aadhar = '1122334455667788' d_status = 'Suspended' )
+            d_license = 'KA01 20120004321' d_lexpiry = '20271120' d_govid = 'Aadhar' d_aadhar = '1122334455667788' d_status = 'Suspended' d_comm_pct = '14.00' )
           ( d_id = cl_system_uuid=>create_uuid_c36_static( ) d_full_name = 'Karthikeyan'  d_mobile = '9000190002' d_emobile = '9000190003'
-            d_license = 'TN37 20160001122' d_lexpiry = '20291010' d_govid = 'Aadhar' d_aadhar = '9988776655443322' d_status = 'Active' )
+            d_license = 'TN37 20160001122' d_lexpiry = '20291010' d_govid = 'Aadhar' d_aadhar = '9988776655443322' d_status = 'Active' d_comm_pct = '14.00' )
           ( d_id = cl_system_uuid=>create_uuid_c36_static( ) d_full_name = 'Vijay Kumar'  d_mobile = '8122334455' d_emobile = '8122334456'
-            d_license = 'MH12 20190008877' d_lexpiry = '20320805' d_govid = 'PAN'    d_pan = 'WXYZP5678Q'    d_status = 'Terminated' )
+            d_license = 'MH12 20190008877' d_lexpiry = '20320805' d_govid = 'PAN'    d_pan = 'WXYZP5678Q'    d_status = 'Terminated' d_comm_pct = '14.00' )
         ).
       CATCH cx_uuid_error INTO DATA(cx_err).
     ENDTRY.

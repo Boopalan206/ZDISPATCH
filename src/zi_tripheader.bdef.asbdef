@@ -20,10 +20,13 @@ late numbering
   delete ( features : instance );
 
   // Field details
-  field ( readonly ) TripID, ReviewReason, PreviousStatus;
-  field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace, SourceID, DestinationID;
+  field ( readonly ) TripID, ReviewReason, PreviousStatus,
+  FreightAmount, DriverCommission, NetProfit,
+  TripTotalExpense;
+  field ( mandatory ) VehicleNumber, LoadType, StartPlace, EndPlace, SourceID, DestinationID,
+  Weight, WeightUnit, RatePerUnit, Currency;
   //  Dynamic feature control
-  field ( features : instance ) TripStatus;
+  field ( features : instance ) TripStatus, Weight, WeightUnit, RatePerUnit, Currency;
 
   association _Incident { create; with draft; }
 
@@ -40,10 +43,9 @@ late numbering
 
   // Action details
   action ( features : instance ) StartTrip result [1] $self;
-  action ( features : instance ) Settle result [1] $self;
-  //  action ( features : instance ) CancelTrip result [1] $self;
+  action ( features : instance, authorization : global, authorization : instance ) Settle result [1] $self;
   action ( features : instance ) EmergencyLockdown parameter ZA_LockdownReason result [1] $self;
-  action ( features : instance ) Unlock result [1] $self;
+  action ( features : instance, authorization : global, authorization : instance ) Unlock result [1] $self;
   action ( features : instance ) AddNewLocation parameter za_location result [1] $self;
 
   // Determination Details
@@ -61,9 +63,9 @@ late numbering
   on save
   {
     create; update;
-    field VehicleNumber, StartPlace, EndPlace, LoadType;
+    field VehicleNumber, StartPlace, EndPlace, LoadType,
+          Weight, WeightUnit, RatePerUnit, Currency;
   }
-
 
   // Side effects
   side effects
@@ -87,7 +89,6 @@ late numbering
 
   }
 
-
   mapping for ztab_tripheader
     {
       TripID             = t_tripid;
@@ -100,7 +101,16 @@ late numbering
       EndPlace           = t_destination;
       LoadType           = t_loadtype;
       TripStatus         = t_status;
+
+      Currency           = t_currency;
+      WeightUnit         = t_weight_uom;
       TripTotalExpense   = t_tot_exp;
+      Weight             = t_weight;
+      RatePerUnit        = t_rate_per_unit;
+      FreightAmount      = t_freight_amt;
+      DriverCommission   = t_comm_amt;
+      NetProfit          = t_profit_amt;
+
       ReviewReason       = t_review_reason;
       PreviousStatus     = t_prev_status;
       CreatedBy          = created_by;
@@ -110,6 +120,29 @@ late numbering
       LocalLastChangedAt = local_last_changed_at;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -191,6 +224,27 @@ late numbering
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 define behavior for ZI_INC_ATT alias IncidentAttachment
 persistent table ztab_inc_att
 draft table zdtab_inc_att
@@ -208,7 +262,7 @@ late numbering
   field ( mandatory ) FileName, IncidentAttachment;
 
   association _TripIncident { with draft; }
-  ancestor association _Root{ with draft; }
+  ancestor association _Root { with draft; }
 
   mapping for ztab_inc_att
     {

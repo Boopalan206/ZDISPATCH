@@ -16,7 +16,50 @@
      <OBJECT>S_START</OBJECT>
      <OKFLAG>X</OKFLAG>
     </USOBX>
+    <USOBX>
+     <NAME>1660D1167C2064B0A28EDA5AD9742B</NAME>
+     <TYPE>HT</TYPE>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <OKFLAG>Y</OKFLAG>
+    </USOBX>
    </USOBX>
+   <USOBT>
+    <USOBT>
+     <NAME>1660D1167C2064B0A28EDA5AD9742B</NAME>
+     <TYPE>HT</TYPE>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>01</LOW>
+    </USOBT>
+    <USOBT>
+     <NAME>1660D1167C2064B0A28EDA5AD9742B</NAME>
+     <TYPE>HT</TYPE>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>02</LOW>
+    </USOBT>
+    <USOBT>
+     <NAME>1660D1167C2064B0A28EDA5AD9742B</NAME>
+     <TYPE>HT</TYPE>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>03</LOW>
+    </USOBT>
+    <USOBT>
+     <NAME>1660D1167C2064B0A28EDA5AD9742B</NAME>
+     <TYPE>HT</TYPE>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>A5</LOW>
+    </USOBT>
+    <USOBT>
+     <NAME>1660D1167C2064B0A28EDA5AD9742B</NAME>
+     <TYPE>HT</TYPE>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>A7</LOW>
+    </USOBT>
+   </USOBT>
    <USOBX_EXT>
     <item>
      <OBJECT>S_START</OBJECT>
@@ -32,7 +75,52 @@
      <EXCEP_TX>Okay</EXCEP_TX>
      <EXCEP_ICON>@08@</EXCEP_ICON>
     </item>
+    <item>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <TTEXT>ZDISPTCH_A</TTEXT>
+     <OCLSS>CPAE</OCLSS>
+     <OKFLAG>Y</OKFLAG>
+     <DEVCLASS>ZDISPATCH</DEVCLASS>
+     <CI_TEXT>Check/Maintain</CI_TEXT>
+     <CH_TEXT>Check</CH_TEXT>
+     <PR_TEXT>Yes</PR_TEXT>
+     <EXCEP>3</EXCEP>
+     <EXCEP_TX>Okay</EXCEP_TX>
+     <EXCEP_ICON>@08@</EXCEP_ICON>
+    </item>
    </USOBX_EXT>
+   <USOBT_EXT>
+    <item>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <TTEXT>ZDISPTCH_A</TTEXT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>01</LOW>
+    </item>
+    <item>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <TTEXT>ZDISPTCH_A</TTEXT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>02</LOW>
+    </item>
+    <item>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <TTEXT>ZDISPTCH_A</TTEXT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>03</LOW>
+    </item>
+    <item>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <TTEXT>ZDISPTCH_A</TTEXT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>A5</LOW>
+    </item>
+    <item>
+     <OBJECT>ZDISPTCH_A</OBJECT>
+     <TTEXT>ZDISPTCH_A</TTEXT>
+     <FIELD>ACTVT</FIELD>
+     <LOW>A7</LOW>
+    </item>
+   </USOBT_EXT>
   </asx:values>
  </asx:abap>
 </abapGit>

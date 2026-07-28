@@ -18,10 +18,28 @@ define root view entity ZI_TripHeader
       t_source                as StartPlace,
       t_destid                as DestinationID,
       t_destination           as EndPlace,
-
       t_loadtype              as LoadType,
       t_status                as TripStatus,
-      t_tot_exp               as TripTotalExpense,
+      
+      t_currency      as Currency,
+      t_weight_uom    as WeightUnit,
+      @Semantics.amount.currencyCode: 'Currency'
+      t_tot_exp       as TripTotalExpense,
+      @Semantics.quantity.unitOfMeasure: 'WeightUnit'
+      t_weight        as Weight,
+
+      @Semantics.amount.currencyCode: 'Currency'
+      t_rate_per_unit as RatePerUnit,
+
+      @Semantics.amount.currencyCode: 'Currency'
+      t_freight_amt   as FreightAmount,
+
+      @Semantics.amount.currencyCode: 'Currency'
+      t_comm_amt      as DriverCommission,
+
+      @Semantics.amount.currencyCode: 'Currency'
+      t_profit_amt    as NetProfit,
+      
       t_review_reason         as ReviewReason,
       t_prev_status           as PreviousStatus,
 

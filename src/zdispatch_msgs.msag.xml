@@ -44,6 +44,24 @@
      <MSGNR>006</MSGNR>
      <TEXT>A reason must be provided to perform an emergency lockdown.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Enter Weight | WeightUnit | Currency | RatePerUnit</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Could not find Driver&apos;s commission %</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Enter Weight | UnitOfMeasure</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
