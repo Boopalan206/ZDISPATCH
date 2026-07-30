@@ -264,6 +264,8 @@ late numbering
   association _TripIncident { with draft; }
   ancestor association _Root { with draft; }
 
+  validation ValidateAttNotFrozen on save { create; update; delete; }
+
   mapping for ztab_inc_att
     {
       IId                = i_id;

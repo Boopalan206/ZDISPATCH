@@ -1,3 +1,52 @@
+CLASS lhc_incidentattachment DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
+  PRIVATE SECTION.
+
+    METHODS ValidateAttNotFrozen FOR VALIDATE ON SAVE
+      IMPORTING keys FOR IncidentAttachment~ValidateAttNotFrozen.
+
+ENDCLASS.
+
+CLASS lhc_incidentattachment IMPLEMENTATION.
+
+  METHOD ValidateAttNotFrozen.
+
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+        ENTITY IncidentAttachment
+        FIELDS ( TripID )
+        WITH CORRESPONDING #( keys )
+        RESULT DATA(lt_atts).
+
+    CHECK lt_atts IS NOT INITIAL.
+
+    SELECT FROM ztab_tripheader
+      FIELDS t_tripid, t_status
+      FOR ALL ENTRIES IN @lt_atts
+      WHERE t_tripid = @lt_atts-TripID
+      INTO TABLE @DATA(lt_db).
+
+    LOOP AT lt_atts INTO DATA(ls_att).
+
+      DATA(lv_status) = VALUE #( lt_db[ t_tripid = ls_att-TripID ]-t_status
+                                 OPTIONAL ).
+
+      IF lv_status = 'Locked' OR lv_status = 'Settled'.
+        APPEND VALUE #( %tky = ls_att-%tky ) TO failed-incidentattachment.
+        APPEND VALUE #( %tky        = ls_att-%tky
+                        %state_area = 'VALIDATE_ATT_FROZEN'
+                        %msg = new_message(
+                                 id       = 'ZDISPATCH_MSGS'
+                                 number   = '016'
+                                 severity = if_abap_behv_message=>severity-error )
+                      ) TO reported-incidentattachment.
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+ENDCLASS.
+
 ******************* TriHeader - Saver Class *****************************
 CLASS lsc_zi_tripheader DEFINITION INHERITING FROM cl_abap_behavior_saver.
 
@@ -257,6 +306,18 @@ CLASS lhc_tripincident IMPLEMENTATION.
     DATA : lt_update  TYPE TABLE FOR UPDATE ZI_TripHeader\\TripIncident.
 
     LOOP AT lt_incident ASSIGNING FIELD-SYMBOL(<ls_incident>).
+      IF <ls_incident>-ReceiptStatus = 'Completed'
+          OR <ls_incident>-ReceiptStatus = 'Verified'.
+        APPEND VALUE #( %tky = <ls_incident>-%tky ) TO failed-tripincident.
+        APPEND VALUE #( %tky = <ls_incident>-%tky
+                        %msg = new_message(
+                                 id       = 'ZDISPATCH_MSGS'
+                                 number   = '015'
+                                 severity = if_abap_behv_message=>severity-error )
+                      ) TO reported-tripincident.
+        CONTINUE.
+      ENDIF.
+
       APPEND VALUE #( %tky = <ls_incident>-%tky
                       ReceiptStatus = COND #( WHEN <ls_incident>-IncidentCategory = 'BRKD'
                                                 OR <ls_incident>-IncidentCategory = 'ACDT'
@@ -690,7 +751,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
     LOOP AT keys INTO DATA(ls_key).
       DATA(ls_trip) = VALUE #( lt_trips[ KEY id %tky = ls_key-%tky ] OPTIONAL ).
 
-      IF ls_trip-TripStatus <> 'Planned' AND ls_trip-TripStatus <> 'Un-Locked'.
+      IF ls_trip-TripStatus <> 'Planned'.
         APPEND VALUE #( %tky = ls_key-%tky ) TO failed-tripheader.
         APPEND VALUE #( %tky = ls_key-%tky
                         %msg = new_message(
@@ -806,7 +867,7 @@ CLASS lhc_TripHeader IMPLEMENTATION.
     LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
 
       " Check the current state of the trip
-      IF <fs_trip>-TripStatus EQ 'In-Transit'.
+      IF <fs_trip>-TripStatus EQ 'Settled' OR <fs_trip>-TripStatus EQ 'Locked'.
 
         APPEND VALUE #( %tky = <fs_trip>-%tky ) TO failed-tripheader.
         APPEND VALUE #( %tky = <fs_trip>-%tky
@@ -993,11 +1054,44 @@ CLASS lhc_TripHeader IMPLEMENTATION.
       WITH CORRESPONDING #( keys )
     RESULT DATA(lt_trips).
 
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+            ENTITY TripHeader BY \_Incident
+            FIELDS ( IncidentCategory ReceiptStatus )
+            WITH CORRESPONDING #( keys )
+            RESULT DATA(lt_incs) LINK DATA(lt_lnk).
+
     LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
+
+      " Extract target key safely
+      DATA(ls_target_tky) = VALUE #( lt_lnk[ KEY id source-%tky = <fs_trip>-%tky ]-target-%tky OPTIONAL ).
+
+      " Use target key in REDUCE
+      DATA(lv_eligible) = REDUCE abap_bool(
+        INIT flag = abap_false
+        FOR ls_inc IN lt_incs WHERE ( %tky = ls_target_tky )
+        NEXT flag = xsdbool(
+          (  ls_inc-IncidentCategory = 'ACDT'
+          OR ls_inc-IncidentCategory = 'BRKD'
+          OR ls_inc-IncidentCategory = 'ABND' )
+          AND ls_inc-ReceiptStatus = 'In-Progress'
+        )
+      ).
+
+      " Reject operation if no eligible incidents were found
+      IF lv_eligible = abap_false.
+        APPEND VALUE #( %tky = <fs_trip>-%tky ) TO failed-tripheader.
+        APPEND VALUE #( %tky = <fs_trip>-%tky
+                        %msg = new_message( id       = 'ZDISPATCH_MSGS'
+                                           number   = '017'
+                                           severity = if_abap_behv_message=>severity-error ) )
+          TO reported-tripheader.
+        CONTINUE.
+      ENDIF.
+
       " Extract the parameter passed from the UI dialog
       DATA(lv_reason) = keys[ KEY id %tky = <fs_trip>-%tky ]-%param-review_reason.
 
-      " 7. Validate empty reason
+      " Validate empty reason
       IF lv_reason IS INITIAL.
         APPEND VALUE #( %tky = <fs_trip>-%tky ) TO failed-tripheader.
         APPEND VALUE #( %tky = <fs_trip>-%tky

@@ -10,6 +10,7 @@
     <IB_TRUST_PSE_ID>SSLC_CUSTOMER_DEFAULT</IB_TRUST_PSE_ID>
     <IB_BASIC_AUTH>X</IB_BASIC_AUTH>
     <IB_X509_AUTH>X</IB_X509_AUTH>
+    <IB_OAUTH2_AUTH>X</IB_OAUTH2_AUTH>
     <INBOUND_ROLE_ID>ZCR_33R4RNETLYP6DIWONSCA43M74I</INBOUND_ROLE_ID>
     <OB_AUTH_PSE_ID>SSLC_CUSTOMER_DEFAULT</OB_AUTH_PSE_ID>
     <OB_TRUST_PSE_ID>SSLC_CUSTOMER_DEFAULT</OB_TRUST_PSE_ID>
@@ -37,6 +38,17 @@
       <SRVC_TYPE>HT</SRVC_TYPE>
       <SRVC_NAME>1660D1167C2064B0A28EDA5AD9742B</SRVC_NAME>
      </item>
+     <item>
+      <COMMUNICATION_SCENARIO_ID>Z_CS_TRIP_APP</COMMUNICATION_SCENARIO_ID>
+      <INBOUND_ID>0002</INBOUND_ID>
+      <IBS_ID>ZSB_TRIP_API_0001_G4BA</IBS_ID>
+      <RELEASE_STATUS>1</RELEASE_STATUS>
+      <IBS_TYPE>G4BA</IBS_TYPE>
+      <IBS_TYPE_TEXT>OData V4</IBS_TYPE_TEXT>
+      <TEXT>ZSB_TRIP_API</TEXT>
+      <SRVC_TYPE>HT</SRVC_TYPE>
+      <SRVC_NAME>44BF24EEF8F634914D5D4331BD5B66</SRVC_NAME>
+     </item>
     </INBOUND>
     <AUTH>
      <item>
@@ -55,27 +67,27 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUE>Write with filter, Create or generate, Display reports, Change, Display</VALUE>
+          <VALUE>Display, Display reports, Change, Write with filter, Create or generate</VALUE>
           <VALUES>
            <item>
-            <UUID>3uPItJNeH+GiznV4p4Rf4g==</UUID>
-            <LOW_VALUE>A7</LOW_VALUE>
+            <UUID>XtXmvvEeH+Gi7S2WPsyEkA==</UUID>
+            <LOW_VALUE>03</LOW_VALUE>
            </item>
            <item>
-            <UUID>3uPItJNeH+GiznV4p4Pf4g==</UUID>
-            <LOW_VALUE>01</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>3uPItJNeH+GiznV4p4Q/4g==</UUID>
+            <UUID>XtXmvvEeH+Gi7S2WPsxEkA==</UUID>
             <LOW_VALUE>A5</LOW_VALUE>
            </item>
            <item>
-            <UUID>3uPItJNeH+GiznV4p4P/4g==</UUID>
+            <UUID>XtXmvvEeH+Gi7S2WPszEkA==</UUID>
             <LOW_VALUE>02</LOW_VALUE>
            </item>
            <item>
-            <UUID>3uPItJNeH+GiznV4p4Qf4g==</UUID>
-            <LOW_VALUE>03</LOW_VALUE>
+            <UUID>XtXmvvEeH+Gi7S2WPsxkkA==</UUID>
+            <LOW_VALUE>A7</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>XtXmvvEeH+Gi7S2WPsykkA==</UUID>
+            <LOW_VALUE>01</LOW_VALUE>
            </item>
           </VALUES>
           <TEXT>Activity</TEXT>

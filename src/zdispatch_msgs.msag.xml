@@ -86,6 +86,30 @@
      <MSGNR>013</MSGNR>
      <TEXT>Only &apos;Locked&apos; trip can be &apos;Un-Locked&apos;</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>A locked or settled trip cannot be changed</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Incident is already verified</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Attachments of a locked or settled trip cannot be changed</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Emergency lock down requires an open severe incident</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
