@@ -148,6 +148,8 @@ CLASS lhc_tripincident DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING keys FOR ACTION TripIncident~IncidentVerified RESULT result.
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR TripIncident RESULT result.
+    METHODS valtripnotfrozen FOR VALIDATE ON SAVE
+      keys FOR tripincident~valtripnotfrozen.
 
 ENDCLASS.
 
@@ -366,6 +368,45 @@ CLASS lhc_tripincident IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD valTripNotFrozen.
+
+    " incidents being saved -> their parent trip key
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+      ENTITY TripIncident
+        FIELDS ( TripID )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_incidents).
+
+    IF lt_incidents IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " the parent trips themselves
+    READ ENTITIES OF ZI_TripHeader IN LOCAL MODE
+      ENTITY TripHeader
+        FIELDS ( TripStatus )
+        WITH VALUE #( FOR inc IN lt_incidents ( %key-TripID = inc-TripID ) )
+      RESULT DATA(lt_trips).
+
+    LOOP AT lt_incidents INTO DATA(ls_inc).
+      DATA(ls_trip) = VALUE #( lt_trips[ TripID = ls_inc-TripID ] OPTIONAL ).
+
+      IF ls_trip-TripStatus = 'Locked' OR ls_trip-TripStatus = 'Settled'.
+
+        APPEND VALUE #( %tky = ls_inc-%tky ) TO failed-tripincident.
+
+        APPEND VALUE #( %tky = ls_inc-%tky
+                        %element-IncidentAmount = if_abap_behv=>mk-on
+                        %msg = new_message( id       = 'ZDISPATCH_MSGS'
+                                            number   = '018'
+                                            severity = if_abap_behv_message=>severity-error
+                                            v1       = ls_trip-TripStatus )
+                      ) TO reported-tripincident.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
 ENDCLASS.
 
 ******************* TriHeader - handler Class **************************
@@ -442,8 +483,8 @@ CLASS lhc_TripHeader IMPLEMENTATION.
                                                    ELSE if_abap_behv=>fc-o-disabled
                                                  )
                           %action-Settle = COND #( WHEN lv_auth_settle = abap_true AND ls_trip-TripStatus = 'Settled'
-                                                      THEN if_abap_behv=>fc-o-enabled
-                                                   ELSE if_abap_behv=>fc-o-disabled
+                                                      THEN if_abap_behv=>fc-o-disabled
+                                                   ELSE if_abap_behv=>fc-o-enabled
                                                  )
                          )
                       ).
@@ -693,6 +734,11 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 *                            %field-Currency    = COND #( WHEN ls_trip-TripStatus = 'Settled' OR ls_trip-TripStatus = 'Locked'
 *                                                         THEN if_abap_behv=>fc-f-read_only
 *                                                         ELSE if_abap_behv=>fc-f-mandatory )
+
+                            %update =  COND #( WHEN ls_trip-TripStatus = 'Locked'
+                                                  OR ls_trip-TripStatus = 'Settled'
+                                               THEN if_abap_behv=>fc-o-disabled
+                                               ELSE if_abap_behv=>fc-o-enabled )
 
                             %action-StartTrip = COND #( WHEN ls_trip-TripStatus = 'Planned'
                                                           OR ls_trip-TripStatus = 'Un-Locked'
@@ -1062,18 +1108,37 @@ CLASS lhc_TripHeader IMPLEMENTATION.
 
     LOOP AT lt_trips ASSIGNING FIELD-SYMBOL(<fs_trip>).
 
-      " Extract target key safely
-      DATA(ls_target_tky) = VALUE #( lt_lnk[ KEY id source-%tky = <fs_trip>-%tky ]-target-%tky OPTIONAL ).
+*      " Extract target key safely
+*      DATA(ls_target_tky) = VALUE #( lt_lnk[ KEY id source-%tky = <fs_trip>-%tky ]-target-%tky OPTIONAL ).
+*
+*      " Use target key in REDUCE
+*      DATA(lv_eligible) = REDUCE abap_bool(
+*        INIT flag = abap_false
+*        FOR ls_inc IN lt_incs WHERE ( %tky = ls_target_tky AND ( (  IncidentCategory = 'ACDT'
+*                                                                 OR IncidentCategory = 'BRKD'
+*                                                                 OR IncidentCategory = 'ABND' )
+*                                                                AND ReceiptStatus = 'In-Progress' ) )
+*        NEXT flag = xsdbool(
+*          (  ls_inc-IncidentCategory = 'ACDT'
+*          OR ls_inc-IncidentCategory = 'BRKD'
+*          OR ls_inc-IncidentCategory = 'ABND' )
+*          AND ls_inc-ReceiptStatus = 'In-Progress'
+*        )
+*      ).
 
-      " Use target key in REDUCE
+      " 1. Check all linked incidents for the current trip using REDUCE
       DATA(lv_eligible) = REDUCE abap_bool(
         INIT flag = abap_false
-        FOR ls_inc IN lt_incs WHERE ( %tky = ls_target_tky )
-        NEXT flag = xsdbool(
-          (  ls_inc-IncidentCategory = 'ACDT'
-          OR ls_inc-IncidentCategory = 'BRKD'
-          OR ls_inc-IncidentCategory = 'ABND' )
-          AND ls_inc-ReceiptStatus = 'In-Progress'
+        FOR ls_lnk IN lt_lnk WHERE ( source-%tky = <fs_trip>-%tky )
+        NEXT flag = COND #(
+          LET ls_inc = VALUE #( lt_incs[ KEY id %tky = ls_lnk-target-%tky ] OPTIONAL ) IN
+          WHEN flag = abap_true THEN abap_true
+          WHEN ( ls_inc-IncidentCategory = 'ACDT'
+              OR ls_inc-IncidentCategory = 'BRKD'
+              OR ls_inc-IncidentCategory = 'ABND' )
+           AND ls_inc-ReceiptStatus = 'In-Progress'
+          THEN abap_true
+          ELSE abap_false
         )
       ).
 

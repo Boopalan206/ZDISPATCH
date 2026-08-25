@@ -27,7 +27,7 @@ CLASS ZCL_FILL_MDATA IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
     clear_all_tables( out ).
-    fill_master_data( out ). " Generates mt_drivers with UUIDs
+*    fill_master_data( out ). " Generates mt_drivers with UUIDs
 *    fill_trip_data( out ).   " Uses mt_drivers to link Trips
   ENDMETHOD.
 

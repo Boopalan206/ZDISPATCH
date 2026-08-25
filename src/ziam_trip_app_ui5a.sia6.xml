@@ -7,7 +7,7 @@
      <NAME>ZIAM_TRIP_APP_UI5A</NAME>
      <TYPE>SIA6</TYPE>
      <DESCRIPTION>IAM for Dispatch Application</DESCRIPTION>
-     <RESPONSIBLE>CB9980000010</RESPONSIBLE>
+     <RESPONSIBLE>CB9980000001</RESPONSIBLE>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
      <MASTER_SYSTEM>H01</MASTER_SYSTEM>
      <PACKAGE_REF>
@@ -46,27 +46,27 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUE>Display,Write with filter,Display reports,Change,Create or generate</VALUE>
+          <VALUE>Display,Create or generate,Change,Display reports,Write with filter</VALUE>
           <VALUES>
            <item>
             <UUID>3uPItJNeH+Gizahav9H/4g==</UUID>
             <LOW_VALUE>03</LOW_VALUE>
            </item>
            <item>
-            <UUID>3uPItJNeH+Gizahav9I/4g==</UUID>
-            <LOW_VALUE>A7</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>3uPItJNeH+Gizahav9If4g==</UUID>
-            <LOW_VALUE>A5</LOW_VALUE>
+            <UUID>3uPItJNeH+Gizahav9G/4g==</UUID>
+            <LOW_VALUE>01</LOW_VALUE>
            </item>
            <item>
             <UUID>3uPItJNeH+Gizahav9Hf4g==</UUID>
             <LOW_VALUE>02</LOW_VALUE>
            </item>
            <item>
-            <UUID>3uPItJNeH+Gizahav9G/4g==</UUID>
-            <LOW_VALUE>01</LOW_VALUE>
+            <UUID>3uPItJNeH+Gizahav9If4g==</UUID>
+            <LOW_VALUE>A5</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>3uPItJNeH+Gizahav9I/4g==</UUID>
+            <LOW_VALUE>A7</LOW_VALUE>
            </item>
           </VALUES>
           <TEXT>Activity</TEXT>

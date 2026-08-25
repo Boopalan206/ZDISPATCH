@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <SCO1>
-    <COMMUNICATION_SCENARIO_ID>Z_CS_TRIP_APP</COMMUNICATION_SCENARIO_ID>
+    <COMMUNICATION_SCENARIO_ID>Z_CS_TRIP_DIS</COMMUNICATION_SCENARIO_ID>
     <COMMUNICATION_SCENARIO_TYPE>1</COMMUNICATION_SCENARIO_TYPE>
     <ALLOWED_CA_INSTANCES>1</ALLOWED_CA_INSTANCES>
     <CONTAINS_INBOUND>X</CONTAINS_INBOUND>
@@ -11,7 +11,7 @@
     <IB_BASIC_AUTH>X</IB_BASIC_AUTH>
     <IB_X509_AUTH>X</IB_X509_AUTH>
     <IB_OAUTH2_AUTH>X</IB_OAUTH2_AUTH>
-    <INBOUND_ROLE_ID>ZCR_6ZSANWFNS4P6DJEGSP6ZD44IZE</INBOUND_ROLE_ID>
+    <INBOUND_ROLE_ID>ZCR_Z3X7TOIJSIP5DJPDNDHOYECK3Y</INBOUND_ROLE_ID>
     <OB_AUTH_PSE_ID>SSLC_CUSTOMER_DEFAULT</OB_AUTH_PSE_ID>
     <OB_TRUST_PSE_ID>SSLC_CUSTOMER_DEFAULT</OB_TRUST_PSE_ID>
     <OB_BASIC_AUTH>X</OB_BASIC_AUTH>
@@ -19,17 +19,17 @@
     <OB_OAUTH2_CLIENT_PROFILE>SAP_APS_COM_A4C_CSCN_SCP</OB_OAUTH2_CLIENT_PROFILE>
     <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
     <MAIN_OBJECT>
-     <NAME>Z_CS_TRIP_APP</NAME>
+     <NAME>Z_CS_TRIP_DIS</NAME>
      <TYPE>SCO1</TYPE>
-     <DESCRIPTION>Communication scenario for TRIP APP</DESCRIPTION>
+     <DESCRIPTION>Communication scenario for dispatcher role</DESCRIPTION>
      <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>
     </MAIN_OBJECT>
     <SCOPE_STATUS>3</SCOPE_STATUS>
     <SCOPE_STATUS_TEXT>On</SCOPE_STATUS_TEXT>
     <INBOUND>
      <item>
-      <COMMUNICATION_SCENARIO_ID>Z_CS_TRIP_APP</COMMUNICATION_SCENARIO_ID>
-      <INBOUND_ID>0002</INBOUND_ID>
+      <COMMUNICATION_SCENARIO_ID>Z_CS_TRIP_DIS</COMMUNICATION_SCENARIO_ID>
+      <INBOUND_ID>0001</INBOUND_ID>
       <IBS_ID>ZSB_TRIP_API_0001_G4BA</IBS_ID>
       <RELEASE_STATUS>1</RELEASE_STATUS>
       <IBS_TYPE>G4BA</IBS_TYPE>
@@ -42,41 +42,78 @@
     <AUTH>
      <item>
       <AUTH_OBJECT>ZDISPTCH_A</AUTH_OBJECT>
-      <STATUS>S</STATUS>
+      <STATUS>M</STATUS>
       <TEXT>ZDISPTCH_A</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>zu/5uQmSH9Gl51vhoHvq3g==</UUID>
+        <UUID>zu/5uQmSH9Gl52IgGL2q3g==</UUID>
         <AUTH_OBJECT>ZDISPTCH_A</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>44BF24EEF8F634914D5D4331BD5B66</IBS_SOURCE>
         <IBS_SOURCE_TYPE>HT</IBS_SOURCE_TYPE>
         <TEXT>ZDISPTCH_A</TEXT>
-        <STATUS>S</STATUS>
+        <STATUS>M</STATUS>
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUE>Create or generate, Display reports, Change, Write with filter, Display</VALUE>
+          <VALUE>Create or generate, Write with filter, Display, Change</VALUE>
           <VALUES>
            <item>
-            <UUID>zu/5uQmSH9Gl51vhoHwK3g==</UUID>
+            <UUID>zu/5uQmSH9Gl52IgGL3K3g==</UUID>
             <LOW_VALUE>01</LOW_VALUE>
            </item>
            <item>
-            <UUID>zu/5uQmSH9Gl51vhoHxq3g==</UUID>
-            <LOW_VALUE>A5</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>zu/5uQmSH9Gl51vhoHwq3g==</UUID>
-            <LOW_VALUE>02</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>zu/5uQmSH9Gl51vhoHyK3g==</UUID>
+            <UUID>zu/5uQmSH9Gl52IgGL4q3g==</UUID>
             <LOW_VALUE>A7</LOW_VALUE>
            </item>
            <item>
-            <UUID>zu/5uQmSH9Gl51vhoHxK3g==</UUID>
+            <UUID>zu/5uQmSH9Gl52IgGL4K3g==</UUID>
             <LOW_VALUE>03</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>zu/5uQmSH9Gl52IgGL3q3g==</UUID>
+            <LOW_VALUE>02</LOW_VALUE>
+           </item>
+          </VALUES>
+          <TEXT>Activity</TEXT>
+          <STATUS>M</STATUS>
+          <IS_ACTVT>X</IS_ACTVT>
+         </item>
+        </VALUES>
+       </item>
+       <item>
+        <UUID>zu/5uQmSH9Gl52IgGL5K3g==</UUID>
+        <AUTH_OBJECT>ZDISPTCH_A</AUTH_OBJECT>
+        <AUTH_OBJECT_INSTANCE>0002</AUTH_OBJECT_INSTANCE>
+        <IBS_SOURCE>44BF24EEF8F634914D5D4331BD5B66</IBS_SOURCE>
+        <IBS_SOURCE_TYPE>HT</IBS_SOURCE_TYPE>
+        <TEXT>ZDISPTCH_A</TEXT>
+        <STATUS>S</STATUS>
+        <INACTIVE>X</INACTIVE>
+        <VALUES>
+         <item>
+          <FIELD>ACTVT</FIELD>
+          <VALUE>Display, Display reports, Change, Write with filter, Create or generate</VALUE>
+          <VALUES>
+           <item>
+            <UUID>zu/5uQmSH9Gl52IgGL6q3g==</UUID>
+            <LOW_VALUE>03</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>zu/5uQmSH9Gl52IgGL7K3g==</UUID>
+            <LOW_VALUE>A5</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>zu/5uQmSH9Gl52IgGL6K3g==</UUID>
+            <LOW_VALUE>02</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>zu/5uQmSH9Gl52IgGL7q3g==</UUID>
+            <LOW_VALUE>A7</LOW_VALUE>
+           </item>
+           <item>
+            <UUID>zu/5uQmSH9Gl52IgGL5q3g==</UUID>
+            <LOW_VALUE>01</LOW_VALUE>
            </item>
           </VALUES>
           <TEXT>Activity</TEXT>

@@ -1,5 +1,9 @@
 CLASS zbp_i_location DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_location.
+protected section.
+private section.
 ENDCLASS.
 
-CLASS zbp_i_location IMPLEMENTATION.
+
+
+CLASS ZBP_I_LOCATION IMPLEMENTATION.
 ENDCLASS.

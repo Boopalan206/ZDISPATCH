@@ -1,4 +1,6 @@
 CLASS zbp_i_tripheader DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_tripheader.
+protected section.
+private section.
 ENDCLASS.
 
 

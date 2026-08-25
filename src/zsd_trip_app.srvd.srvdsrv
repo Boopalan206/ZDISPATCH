@@ -6,4 +6,6 @@ define service ZSD_TRIP_APP {
   expose zi_driver       as Driver;
   expose ZI_Vehicle      as Vehicle;
   expose ZI_Location     as Location;
+  expose ZI_LoadTypeVH   as LoadTypeVH;
+  expose ZI_IncCategVH   as IncidentCategoryVH;
 }

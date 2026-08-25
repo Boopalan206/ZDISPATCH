@@ -28,7 +28,7 @@ late numbering
   //  Dynamic feature control
   field ( features : instance ) TripStatus, Weight, WeightUnit, RatePerUnit, Currency;
 
-  association _Incident { create; with draft; }
+  association _Incident { create ( features : instance ); with draft; }
 
   // Draft area
   draft action Activate optimized;
@@ -177,6 +177,8 @@ late numbering
     create; update;
     field IncidentAmount;
   }
+
+  validation valTripNotFrozen on save { create; field TripID; }
 
   // Determination section
   determination DetermineTotalExpense

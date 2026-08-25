@@ -110,6 +110,12 @@
      <MSGNR>017</MSGNR>
      <TEXT>Emergency lock down requires an open severe incident</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDISPATCH_MSGS</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Cost cannot be added to a &amp;1 trip</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
